@@ -122,10 +122,10 @@ Lightweight web server (such as apache or nginx) capable of running cgi.
 > $ sudo systemctl enable nginx --now
 > $
 > $ # check install
-> $ # http://your.ip/            -> Welcom to 19blog
-> $ # http://your.ip/cgi         -> ask 19blog admin login: enter the name and password set above
-> $ #                            -> 403 Forbidden
-> $ # http://your.ip/cgi/test    -> cgi test success
+> $ # http://your.ip|domain/            -> Welcom to 19blog
+> $ # http://your.ip|domain/cgi         -> ask 19blog admin login: enter the name and password set above
+> $ #                                   -> 403 Forbidden
+> $ # http://your.ip|domain/cgi/test    -> cgi test success
 > ```
 
 ## Demo:
