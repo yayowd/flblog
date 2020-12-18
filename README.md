@@ -1,13 +1,16 @@
 # 19blog
 a simple blog, write in bash + vue, run at web server cgi + document root.
 
+## FIRST:
+> `JUST RUN YOUR BLOG, AND WRITE AND READ.`
+
 ## Install
 Most Unix-like systems have the bash shell,
 Lightweight web server (such as apache or nginx) capable of running cgi.
 Note that nginx need fcgiwrap to support cgi.
 
-Archlinux:
-> ```bash
+#### Archlinux:
+> ```shell
 > $ # install
 > $ sudo pacman -S nginx fcgiwrap
 > $
@@ -55,11 +58,8 @@ Archlinux:
 > $ # +          fastcgi_pass            unix:/run/fcgiwrap/fcgiwrap-nginx.sock;
 > $ # +      }
 > $ # +  }
-> $ # NOTE: please set port/domain/path to your server info.
+> $ # NOTE: please set port|domain|path to your server info.
 > ```
 
-2. config fcgiwrap  
-     
-   update system config:  
-   >`systemctl daemon-reload`
-   
+## Demo:
+> [alpsibex's blog](http://blog.alpsibex.cn)
