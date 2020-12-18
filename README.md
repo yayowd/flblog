@@ -53,8 +53,8 @@ Lightweight web server (such as apache or nginx) capable of running cgi.
 > $ cd /srv/19blog/cgi
 > sudo -u http tee test <<'EOF'
 > #!/bin/bash
-> echo "HTTP/1.1 200 OK
-> echo "Content-Type: text/html; charset=UTF-8
+> echo "HTTP/1.1 200 OK"
+> echo "Content-Type: text/html; charset=UTF-8"
 > echo 
 > echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
 > echo "<h2>cgi test success</h2>"
