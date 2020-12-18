@@ -10,7 +10,7 @@ Lightweight web server (such as apache or nginx) capable of running cgi.
 Note that nginx need fcgiwrap to support cgi.
 
 #### Archlinux:
-> ```shell
+> ```Shell
 > $ # install
 > $ sudo pacman -S nginx fcgiwrap
 > $
@@ -55,7 +55,7 @@ Note that nginx need fcgiwrap to support cgi.
 > $ # +          include                 fastcgi.conf;
 > $ # +          fastcgi_param           REMOTE_USER $remote_user;
 > $ # +          fastcgi_param           PATH_INFO $1;
-> $ # +          fastcgi_pass            unix:/run/fcgiwrap/fcgiwrap-nginx.sock;
+> $ # +          fastcgi_pass            unix:/tmp/fcgiwrap.sock;
 > $ # +      }
 > $ # +  }
 > $ # NOTE: please set port|domain|path to your server info.
