@@ -5,29 +5,32 @@ a simple blog, write in bash + vue, run at web server cgi + document root.
 > `JUST RUN YOUR BLOG, AND WRITE AND READ.`
 
 ## Install
-Most Unix-like systems have the bash shell,
+Most Unix-like systems have the bash shell,  
 Lightweight web server (such as apache or nginx) capable of running cgi.
-Note that nginx need fcgiwrap to support cgi.
+**NOTE** nginx need fcgiwrap to support cgi.
 
 #### Archlinux:
 > ```Shell
 > $ # install
 > $ sudo pacman -S nginx fcgiwrap
 > $
-> $ # config
+> $ # config fcgiwrap
 > $ sudo vim /usr/lib/systemd/system/fcgiwrap.service 
 > $ # -  ExecStart=/usr/sbin/fcgiwrap
 > $ # +  ExecStart=/usr/sbin/fcgiwrap -s unix:/tmp/fcgiwrap.sock
 > $ # NOTE: DO NOT set path to /run/fcgiwrap.sock, 
 > $ #       because user http cannot write to /run.
+> $
 > $ # update system
 > $ systemctl daemon-reload
 > $ systemctl enable fcgiwrap --now
-> $ # NOTE: if the file /tmp/fcgiwrap.sock exist,
-> $ #       service will start failed.
+> $ # NOTE: if the file /tmp/fcgiwrap.sock exist, service will start failed.
 > $ #       remove the file first.
+> $
 > $ # find unix socket path:
 > $ systemctl status fcgiwrap
+> $
+> $ # config nginx
 > $ sudo vim /etc/nginx/nginx.conf
 > $ # +  # for 19blog
 > $ # +  server {
@@ -58,7 +61,7 @@ Note that nginx need fcgiwrap to support cgi.
 > $ # +          fastcgi_pass            unix:/tmp/fcgiwrap.sock;
 > $ # +      }
 > $ # +  }
-> $ # NOTE: please set port|domain|path to your server info.
+> $ # NOTE: please set the port|domain|path|file to your own information.
 > ```
 
 ## Demo:
