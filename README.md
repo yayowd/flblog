@@ -141,10 +141,10 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >```
 - check install
 >```shell
->http://your.domain/          -> Welcom to 19blog
->http://your.domain/cgi       -> Ask login: enter the name and passwd set above
->                             -> 403 Forbidden
->http://your.domain/cgi/test  -> cgi test success
+> http://your.domain/          -> Welcom to 19blog
+> http://your.domain/cgi       -> Ask login: enter the name and passwd set above
+>                              -> 403 Forbidden
+> http://your.domain/cgi/test  -> cgi test success
 >
 >NOTE: When error '502 Bad Gateway' occurs, restart fcgiwrap service by:
 >$ sudo systemctl stop fcgiwrap.service
