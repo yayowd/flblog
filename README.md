@@ -140,16 +140,16 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ sudo systemctl enable nginx --now
 >```
 - check install
->```
+>```shell
 >http://your.domain/          -> Welcom to 19blog
 >http://your.domain/cgi       -> Ask login: enter the name and passwd set above
 >                             -> 403 Forbidden
->                                When error '502 Bad Gateway' occurs: 
->                                  restart fcgiwrap service by:
->                                    sudo systemctl stop fcgiwrap.service
->                                    sudo systemctl stop fcgiwrap.socket
->                                    sudo systemctl start fcgiwrap.socket
 >http://your.domain/cgi/test  -> cgi test success
+>
+>NOTE: When error '502 Bad Gateway' occurs, restart fcgiwrap service by:
+>$ sudo systemctl stop fcgiwrap.service
+>$ sudo systemctl stop fcgiwrap.socket
+>$ sudo systemctl start fcgiwrap.socket
 >```
 ## Demo:
 >[alpsibex's blog](http://blog.alpsibex.cn)
