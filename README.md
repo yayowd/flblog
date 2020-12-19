@@ -44,6 +44,7 @@ NOTE: nginx need fcgiwrap to support cgi.
 >```
 - web basic authorization
 >```shell
+> $ # install apache tools
 > $ sudo pacman -S apache    # archlinux
 > $ # create admin account
 > $ cd /srv/19blog/cgi
