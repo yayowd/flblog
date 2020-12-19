@@ -5,51 +5,60 @@ a simple blog, write in bash + vue, run at web server cgi + document root.
 > `JUST RUN YOUR BLOG, AND WRITE AND READ.`
 
 ## Install
-Most Unix-like systems have the bash shell,  
-Lightweight web server (such as apache or nginx) capable of running cgi.  
-**NOTE** nginx need fcgiwrap to support cgi.
 
-#### Archlinux:
-> ```Shell
-> $ # install server
-> $ sudo pacman -S nginx fcgiwrap
-> $
-> $ # start fcgiwrap
-> $ sudo systemctl enable fcgiwrap.socket --now
-> $
-> $ # find unix socket path of fcgiwrap
-> $ sudo systemctl status fcgiwrap.socket
-> $ # > ● fcgiwrap.socket - fcgiwrap Socket
-> $ # >      Loaded: loaded (/usr/lib/systemd/system/fcgiwrap.socket; enabled; vendor preset: disabled)
-> $ # >      Active: active (running) since Fri 2020-12-18 19:18:19 CST; 9min ago
-> $ # >    Triggers: ● fcgiwrap.service
-> $ # >      Listen: /run/fcgiwrap.sock (Stream)
-> $ # >       Tasks: 0 (limit: 1141)
-> $ # >      Memory: 0B
-> $ # >      CGroup: /system.slice/fcgiwrap.socket
-> $ # NOTE: you can find socket path in the line starting with "Listen".
-> $
-> $ # diretories
-> $ # NOTE: the server root is which diretory your like.
-> $ #       may be the /srv or /data/srv or ~/srv
-> $ #       let's assume it is /srv
-> $ sudo mkdir -p /srv/19blog/cgi
-> $ sudo chown -R http:http /srv/19blog
-> $
-> $ # web basic authorization
-> $ sudo pacman -S apache
+#### BASH
+> Most Unix-like systems have the bash shell
+
+#### WEB SERVER
+Lightweight web server (such as apache or nginx) capable of running cgi.  
+NOTE: nginx need fcgiwrap to support cgi.
+
+- install server
+>```shell
+>$ sudo pacman -S nginx fcgiwrap    # archlinux
+>```
+- start fcgiwrap
+>```shell
+>$ sudo systemctl enable fcgiwrap.socket --now
+>```
+- find unix socket path of fcgiwrap
+>```shell
+>$ sudo systemctl status fcgiwrap.socket
+>$ # > ● fcgiwrap.socket - fcgiwrap Socket
+>$ # >      Loaded: loaded (/usr/lib/systemd/system/fcgiwrap.socket; enabled; vendor preset: disabled)
+>$ # >      Active: active (running) since Fri 2020-12-18 19:18:19 CST; 9min ago
+>$ # >    Triggers: ● fcgiwrap.service
+>$ # >      Listen: /run/fcgiwrap.sock (Stream)
+>$ # >       Tasks: 0 (limit: 1141)
+>$ # >      Memory: 0B
+>$ # >      CGroup: /system.slice/fcgiwrap.socket
+>$ # NOTE: you can find socket path in the line starting with "Listen".
+>```
+- diretories
+>```shell
+>$ # NOTE: the server root is which diretory your like.
+>$ #       may be the /srv or /data/srv or ~/srv
+>$ #       let's assume it is /srv
+>$ sudo mkdir -p /srv/19blog/cgi
+>$ sudo chown -R http:http /srv/19blog
+>```
+- web basic authorization
+>```shell
+> $ sudo pacman -S apache    # archlinux
 > $ # create admin account
 > $ cd /srv/19blog/cgi
 > $ sudo -u http touch .passwd
 > $ sudo -u http htpasswd -b .passwd <name> <passwd>
 > $ # NOTE: DO NOT place passwd file in 19blog root directory,
 > $ #       because 19blog root directory can be accessed directly through the web.       
-> $
-> $ # make demo files
+>```
+- make demo files
+>```shell
 > $ cd /srv/19blog
 > sudo -u http tee index.html <<EOF
 > Welcom to 19blog
 > EOF
+>
 > $ cd /srv/19blog/cgi
 > sudo -u http tee test <<'EOF'
 > #!/bin/bash
@@ -57,7 +66,7 @@ Lightweight web server (such as apache or nginx) capable of running cgi.
 > echo "Content-Type: text/html; charset=UTF-8"
 > echo 
 > echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
-> echo "<h2>cgi test success</h2>"
+> echo "<h2>cgi test success, run at $(whoami)</h2>"
 > echo "<br/>SCRIPT_FILENAME: $SCRIPT_FILENAME"
 > echo "<br/>QUERY_STRING: $QUERY_STRING"
 > echo "<br/>REQUEST_METHOD: $REQUEST_METHOD"
@@ -82,8 +91,9 @@ Lightweight web server (such as apache or nginx) capable of running cgi.
 > echo "<br/><br/>$(date)"
 > EOF
 > $ sudo chmod +x test
-> $
-> $ # config nginx
+>```
+- config nginx
+>```shell
 > $ sudo vim /etc/nginx/nginx.conf
 > $ # add follow lines in http module, before the exist server module
 >     # for 19blog
@@ -117,16 +127,17 @@ Lightweight web server (such as apache or nginx) capable of running cgi.
 >     }
 > $ # NOTE: before start nginx service, 
 > $ #       please set the port|domain|path|file to your own information.
-> $
-> $ # start nginx
+>```
+- start nginx
+>```shell
 > $ sudo systemctl enable nginx --now
-> $
-> $ # check install
-> $ # http://your.ip|domain/            -> Welcom to 19blog
-> $ # http://your.ip|domain/cgi         -> ask 19blog admin login: enter the name and password set above
-> $ #                                   -> 403 Forbidden
-> $ # http://your.ip|domain/cgi/test    -> cgi test success
-> ```
-
+>```
+- check install
+>```
+> http://your.domain/          -> Welcom to 19blog
+> http://your.domain/cgi       -> ask 19blog admin login: enter the name and password set above
+>                              -> 403 Forbidden
+> http://your.domain/cgi/test  -> cgi test success
+>```
 ## Demo:
 > [alpsibex's blog](http://blog.alpsibex.cn)
