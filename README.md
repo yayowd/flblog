@@ -67,7 +67,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >echo "Content-Type: text/html; charset=UTF-8"
 >echo 
 >echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
->echo "<h2>cgi test success, run at $(whoami)</h2>"
+>echo "<h2>cgi test success, run as usr($(whoami))</h2>"
 >echo "<br/>SCRIPT_FILENAME: $SCRIPT_FILENAME"
 >echo "<br/>QUERY_STRING: $QUERY_STRING"
 >echo "<br/>REQUEST_METHOD: $REQUEST_METHOD"
@@ -142,8 +142,13 @@ NOTE: Nginx need fcgiwrap to support cgi.
 - check install
 >```
 >http://your.domain/          -> Welcom to 19blog
->http://your.domain/cgi       -> ask 19blog admin login: enter the name and password set above
+>http://your.domain/cgi       -> Ask login: enter the name and passwd set above
 >                             -> 403 Forbidden
+>                                When error '502 Bad Gateway' occurs: 
+>                                  restart fcgiwrap service by:
+>                                    sudo systemctl stop fcgiwrap.service
+>                                    sudo systemctl stop fcgiwrap.socket
+>                                    sudo systemctl start fcgiwrap.socket
 >http://your.domain/cgi/test  -> cgi test success
 >```
 ## Demo:
