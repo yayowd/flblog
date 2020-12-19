@@ -11,7 +11,7 @@ a simple blog, write in bash + vue, run at web server cgi + document root.
 
 #### WEB SERVER
 Lightweight web server (such as apache or nginx) capable of running cgi.  
-NOTE: nginx need fcgiwrap to support cgi.
+NOTE: Nginx need fcgiwrap to support cgi.
 
 - install server
 >```shell
@@ -32,11 +32,11 @@ NOTE: nginx need fcgiwrap to support cgi.
 >$ # >       Tasks: 0 (limit: 1141)
 >$ # >      Memory: 0B
 >$ # >      CGroup: /system.slice/fcgiwrap.socket
->$ # NOTE: you can find socket path in the line starting with "Listen".
+>$ # NOTE: You can find socket path in the line starting with "Listen".
 >```
 - diretories
 >```shell
->$ # NOTE: the server root is which diretory your like.
+>$ # NOTE: The server root is which diretory your like.
 >$ #       may be the /srv or /data/srv or ~/srv
 >$ #       let's assume it is /srv
 >$ sudo mkdir -p /srv/19blog/cgi
@@ -56,12 +56,12 @@ NOTE: nginx need fcgiwrap to support cgi.
 - make demo files
 >```shell
 > $ cd /srv/19blog
-> sudo -u http tee index.html <<EOF
+> $ sudo -u http tee index.html <<EOF
 > Welcom to 19blog
 > EOF
 >
 > $ cd /srv/19blog/cgi
-> sudo -u http tee test <<'EOF'
+> $ sudo -u http tee test <<'EOF'
 > #!/bin/bash
 > echo "HTTP/1.1 200 OK"
 > echo "Content-Type: text/html; charset=UTF-8"
@@ -92,6 +92,9 @@ NOTE: nginx need fcgiwrap to support cgi.
 > echo "<br/><br/>$(date)"
 > EOF
 > $ sudo chmod +x test
+> $
+> $ # NOTE: When the command line ends with <<EOF or <<'EOF', 
+> $ #       this command contains multiple lines and is completed with a single EOF line.
 >```
 - config nginx
 >```shell
@@ -126,7 +129,7 @@ NOTE: nginx need fcgiwrap to support cgi.
 >             fastcgi_pass            unix:/run/fcgiwrap.sock;
 >         }
 >     }
-> $ # NOTE: before start nginx service, 
+> $ # NOTE: Before start nginx service, 
 > $ #       please set the port|domain|path|file to your own information.
 >```
 - start nginx
