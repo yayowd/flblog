@@ -96,16 +96,16 @@ NOTE: Nginx need fcgiwrap to support cgi.
 - make demo files
 >```shell
 >$ read -d '' index <<-'EOF'
->	<h2>Welcom to 19blog</h2>
->	EOF
+><h2>Welcom to 19blog</h2>
+>EOF
 >$ read -d '' test <<-'EOF'
->	#!/bin/bash
->	echo "HTTP/1.1 200 OK"
->	echo "Content-Type: text/html; charset=UTF-8"
->	echo
->	echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
->	echo "<h2>cgi test success</h2>run as usr($(whoami))<br/><br/>$(date)"
->	EOF
+>#!/bin/bash
+>echo "HTTP/1.1 200 OK"
+>echo "Content-Type: text/html; charset=UTF-8"
+>echo
+>echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
+>echo "<h2>cgi test success</h2>run as usr($(whoami))<br/><br/>$(date)"
+>EOF
 >$
 >$ # --archlinux
 >$ sudo -u http tee /srv/19blog/index.html <<< "$index"
@@ -123,36 +123,36 @@ NOTE: Nginx need fcgiwrap to support cgi.
 - config nginx
 >```shell
 >$ read -d '' config <<-'EOF'
->	# for 19blog
->	server {
->	    listen          80;
->	    listen          [::]:80;
->	    server_name     domain.you;
->	    root            /srv/19blog;
->	    access_log      /var/log/nginx/19blog.access.log;
->	    error_log       /var/log/nginx/19blog.error.log;
->	    location / {
->	        # First attemp to serve request as file, then
->	        # as diretory, then fall back to displaying a 404.
->	        try_files $uri $uri/ =404;
->	    }
->	    location ~ /cgi/ {
->	        # basic authorization
->	        auth_basic              "19blog admin login";
->	        auth_basic_user_file    /srv/19blog/cgi/.passwd;
->	        # buffer settings
->	        gzip                    off;
->	        client_max_body_size    0;
->	        fastcgi_buffer_size     32k;
->	        fastcgi_buffers         32 32k;
->	        # fastcgi settings
->	        include                 fastcgi.conf;
->	        fastcgi_param           REMOTE_USER $remote_user;
->	        fastcgi_param           PATH_INFO $1;
->	        fastcgi_pass            unix:/run/fcgiwrap.sock;
->	    }
->	}
->	EOF
+># for 19blog
+>server {
+>    listen          80;
+>    listen          [::]:80;
+>    server_name     domain.you;
+>    root            /srv/19blog;
+>    access_log      /var/log/nginx/19blog.access.log;
+>    error_log       /var/log/nginx/19blog.error.log;
+>    location / {
+>        # First attemp to serve request as file, then
+>        # as diretory, then fall back to displaying a 404.
+>        try_files $uri $uri/ =404;
+>    }
+>    location ~ /cgi/ {
+>        # basic authorization
+>        auth_basic              "19blog admin login";
+>        auth_basic_user_file    /srv/19blog/cgi/.passwd;
+>        # buffer settings
+>        gzip                    off;
+>        client_max_body_size    0;
+>        fastcgi_buffer_size     32k;
+>        fastcgi_buffers         32 32k;
+>        # fastcgi settings
+>        include                 fastcgi.conf;
+>        fastcgi_param           REMOTE_USER $remote_user;
+>        fastcgi_param           PATH_INFO $1;
+>        fastcgi_pass            unix:/run/fcgiwrap.sock;
+>    }
+>}
+>EOF
 >$
 >$ # --archlinux
 >$ sudo tee /etc/nginx/19blog.conf <<< "$config"
