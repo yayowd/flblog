@@ -44,6 +44,8 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ # >       Tasks: 0 (limit: 1141)
 >$ # >      Memory: 0B
 >$ # >      CGroup: /system.slice/fcgiwrap.socket
+>$ # For the consistency of the configuration file, add a link file here
+>$ sudo ln -s /run/fcgiwrap.sock /etc/nginx/fcgiwrap.sock
 >$
 >$ # --centos
 >$ sudo systemctl status fcgiwrap@nginx.socket
@@ -55,13 +57,13 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ # >    Memory: 68.0K
 >$ # >    CGroup: /system.slice/system-fcgiwrap.slice/fcgiwrap@nginx.socket
 >$ # For the consistency of the configuration file, add a link file here
->$ sudo ln -s /run/fcgiwrap/fcgiwrap-nginx.sock /run/fcgiwrap.sock
+>$ sudo ln -s /run/fcgiwrap/fcgiwrap-nginx.sock /etc/nginx/fcgiwrap.sock
 >$
 >$ # NOTE: You can find socket path in the line starting with "Listen".
 >```
-- diretories
+- directories
 >```shell
->$ # NOTE: The server root is which diretory your like.
+>$ # NOTE: The server root is which directory your like.
 >$ #       may be the /srv or /data/srv or ~/srv
 >$ #       let's assume it is /srv
 >$ sudo mkdir -p /srv/19blog/cgi
@@ -133,7 +135,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >    error_log       /var/log/nginx/19blog.error.log;
 >    location / {
 >        # First attemp to serve request as file, then
->        # as diretory, then fall back to displaying a 404.
+>        # as directory, then fall back to displaying a 404.
 >        try_files $uri $uri/ =404;
 >    }
 >    location ~ /cgi/ {
@@ -149,7 +151,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >        include                 fastcgi.conf;
 >        fastcgi_param           REMOTE_USER $remote_user;
 >        fastcgi_param           PATH_INFO $1;
->        fastcgi_pass            unix:/run/fcgiwrap.sock;
+>        fastcgi_pass            unix:/etc/nginx/fcgiwrap.sock;
 >    }
 >}
 >EOF
