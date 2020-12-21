@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
+source fcgi
+
 # blog edit
 #  id == NULL -> add
 #  id != NULL -> edit
 
+cat edit.html
