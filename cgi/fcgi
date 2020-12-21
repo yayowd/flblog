@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# --Output standard file header
+echo "Content-Type: text/html; charset=UTF-8"
+echo
+
 # --fastcgi params list
 #
 # fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
@@ -34,27 +38,25 @@ function urldecode() {
   echo -e "${_//%/\\x}"
 }
 
-# --pasrse qurey params to $param array
-declare -A param
+# --pasrse qurey params
+# bash v4.0+
+declare -A uparam
 function parseQuery() {
   while IFS='=' read -r -d '&' key value && [[ -n "$key" ]]; do
-    echo $key
-    echo $value
-    echo $(urldecode "$value")
-    param["$key"]=$value
-#    param["$key"]=$(urldecode "$value")
+    uparam["$key"]=$(urldecode "$value")
   done <<<"${*}&"
 }
-
-declare -A param2
-param2=( ["moo"]="cow" ["woof"]="dog")
-echo "${param2[@]}"
+parseQuery "$QUERY_STRING"
 
 # --test
-parseQuery "a=1&b=2&c=3&d"
-param[0]=123
-param[1]=456
-echo "${!param[@]}"
-for key in "${!param[@]}"; do
-    echo "$key: ${param[$key]}"
-done
+#parseQuery "client=firefox-b-d&ei=sT7fX5CPAYfahwPWsJko&q=bash+%E5%B0%86%E5%8F%98%E9%87%8F%E5%86%99%E5%85%A5%E6%96%87%E4%BB%B6&oq=bash+%E5%B0%86%E5%8F%98%E9%87%8F%E5%86%99%E5%85%A5%E6%96%87%E4%BB%B6&gs_lcp=CgZwc3ktYWIQA1D152pYrLhrYPa5a2gAcAB4AIABtjyIAd9ekgENMy0xLjEuMC4xLjktMpgBAKABAaoBB2d3cy13aXrAAQE&sclient=psy-ab&ved=0ahUKEwjQq-KSw9ztAhUH7WEKHVZYBgUQ4dUDCAw&uact=5"
+cat <<EOF
+<div style='background-color: #71f5f5; border: #999 solid 1px; padding: 5px;'>
+<p>uparam names: ${!uparam[*]}</p>
+<p>query_string: $QUERY_STRING</p>
+<p>content_type: $CONTENT_TYPE</p>
+<p>post body: <br/>
+<pre>$(cat)</pre>
+</p>
+</div>
+EOF
