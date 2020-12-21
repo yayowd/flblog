@@ -75,6 +75,9 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ sudo chown -R nginx:nginx /srv/19blog
 >$ sudo chcon -Ru system_u /srv/19blog
 >$ sudo chcon -Rt httpd_sys_content_t /srv/19blog
+>$ # NOTE: In centos 8.2, chcon with error:
+>$ #       "chcon: can't apply partial context to unlabeled file 'xxx'"
+>$ #       please ignore it.
 >```
 - web basic authorization
 >```shell
