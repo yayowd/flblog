@@ -212,20 +212,20 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >```shell
 >$ # --archlinux
 >$ log_path=/var/log/nginx
->$ doc_root=/srv/19blog
+>$ server_root=/srv/19blog
 >$ socket_path=/run/fcgiwrap.sock
 >$
 >$ # --centos
 >$ log_path=/var/log/nginx
->$ doc_root=/srv/19blog
+>$ server_root=/srv/19blog
 >$ socket_path=/run/fcgiwrap/fcgiwrap-nginx.sock
 >$
 >$ # --macos
 >$ log_path=/usr/local/var/log/nginx
->$ doc_root=$(cd ~; pwd)/srv/19blog
+>$ server_root=$(cd ~; pwd)/srv/19blog
 >$ socket_path=/usr/local/var/run/fastcgi.sock
 >$
->$ passwd_file=${doc_root}/cgi/.passwd
+>$ passwd_file=${server_root}/cgi/.passwd
 >$ server_name=domain.you
 >$
 >$ read -d '' config <<-EOF
@@ -234,7 +234,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >    listen          80;
 >    listen          [::]:80;
 >    server_name     $server_name;
->    root            $doc_root;
+>    root            $server_root;
 >    access_log      ${log_path}/19blog.access.log;
 >    error_log       ${log_path}/19blog.error.log;
 >    location / {
@@ -293,7 +293,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ # NOTE: If you see the welcome page of nginx, 
 >$ #       please modify the domain information in the configuration file
 >$ #       and access it through the domain.
->$ #
+>$
 >$ # NOTE: When error '502 Bad Gateway' occurs, restart fcgiwrap service by:
 >$ # --archlinux
 >$ sudo systemctl stop fcgiwrap.service
@@ -306,5 +306,22 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ # --macos
 >$ brew services restart fcgiwrap
 >```
-## Demo:
+
+## DEVELOPER GUIDE
+
+- Install on your development machine
+- Git clone the respository
+- Link server root to git working diretory
+  >```shell
+  >$ # --archlinux/centos
+  >$ server_root=/srv/19blog
+  >$
+  >$ # --macos
+  >$ server_root=~/srv/19blog
+  >$
+  >$ sudo rm -rf $server_root
+  >$ sudo ln -s <git_working_diretory> $server_root
+  >```
+
+## Demo
 >[alpsibex's blog](http://blog.alpsibex.cn)
