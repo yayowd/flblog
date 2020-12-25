@@ -39,7 +39,7 @@ function urldecode() {
 }
 
 # --pasrse qurey params
-# bash v4.0+
+# need bash v4.0+
 declare -A uparam
 function parseQuery() {
   while IFS='=' read -r -d '&' key value && [[ -n "$key" ]]; do
@@ -47,6 +47,7 @@ function parseQuery() {
   done <<<"${*}&"
 }
 parseQuery "$QUERY_STRING"
+
 
 # --test
 #parseQuery "client=firefox-b-d&ei=sT7fX5CPAYfahwPWsJko&q=bash+%E5%B0%86%E5%8F%98%E9%87%8F%E5%86%99%E5%85%A5%E6%96%87%E4%BB%B6&oq=bash+%E5%B0%86%E5%8F%98%E9%87%8F%E5%86%99%E5%85%A5%E6%96%87%E4%BB%B6&gs_lcp=CgZwc3ktYWIQA1D152pYrLhrYPa5a2gAcAB4AIABtjyIAd9ekgENMy0xLjEuMC4xLjktMpgBAKABAaoBB2d3cy13aXrAAQE&sclient=psy-ab&ved=0ahUKEwjQq-KSw9ztAhUH7WEKHVZYBgUQ4dUDCAw&uact=5"
