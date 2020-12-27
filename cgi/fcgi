@@ -32,32 +32,81 @@ echo
 # fastcgi_param REMOTE_USER         $remote_user;
 # fastcgi_param PATH_INFO           $1;
 
+# --save the request body
+REQUEST_BODY="$(cat)"
+
 # --decode query param value
 function urldecode() {
-  : "${*//+/ }"
-  echo -e "${_//%/\\x}"
+    : "${*//+/ }"
+    echo -e "${_//%/\\x}"
 }
 
 # --pasrse qurey params
 # need bash v4.0+
 declare -A uparam
 function parseQuery() {
-  while IFS='=' read -r -d '&' key value && [[ -n "$key" ]]; do
-    uparam["$key"]=$(urldecode "$value")
-  done <<<"${*}&"
+    local body
+    if [ "$CONTENT_TYPE" = 'application/x-www-form-urlencoded' ]; then
+        body=$REQUEST_BODY
+    fi
+    while IFS='=' read -r -d '&' key value; do
+        if [ -n "$key" ]; then
+            uparam["$key"]=$(urldecode "$value")
+        fi
+    done <<<"$QUERY_STRING&$body&"
 }
-parseQuery "$QUERY_STRING"
+parseQuery
 
+# --read post body
+function readBody() {
+    local type boundary
+    IFS=' ;=' read -r type _ boundary _ <<<"$CONTENT_TYPE"
+    if [ "$type" = 'multipart/form-data' ]; then
+        local name filename ctype clines
+        while read -r line; do
+            if [[ "$line" =~ ^--${boundary}.* ]]; then
+                if [ -n "$name" ]; then
+                    #            if [ "$ctype" ]; then
+                    #
+                    #            fi
+                    # save form param:
+                    #            uparam[${name//\"/}]=$clines
+                    #            image/gif
+                    #            image/jpeg
+                    #            echo "filename: $filename"
+                    #            echo "ctype: $ctype"
+                    #            echo "clines: $clines"
+
+                    # clear
+                    clines=''
+                fi
+                IFS=' :;=' read -r _ _ _ name _ filename
+                IFS=' :' read -r _ ctype
+                if [ -n "$ctype" ]; then
+                    read -r _
+                fi
+#            else
+#                clines="$clines$line"
+            fi
+            ((i++))
+        done <<<"$REQUEST_BODY"
+    fi
+}
+echo "<pre>"
+readBody
+echo "</pre>"
 
 # --test
 #parseQuery "client=firefox-b-d&ei=sT7fX5CPAYfahwPWsJko&q=bash+%E5%B0%86%E5%8F%98%E9%87%8F%E5%86%99%E5%85%A5%E6%96%87%E4%BB%B6&oq=bash+%E5%B0%86%E5%8F%98%E9%87%8F%E5%86%99%E5%85%A5%E6%96%87%E4%BB%B6&gs_lcp=CgZwc3ktYWIQA1D152pYrLhrYPa5a2gAcAB4AIABtjyIAd9ekgENMy0xLjEuMC4xLjktMpgBAKABAaoBB2d3cy13aXrAAQE&sclient=psy-ab&ved=0ahUKEwjQq-KSw9ztAhUH7WEKHVZYBgUQ4dUDCAw&uact=5"
 cat <<EOF
 <div style='background-color: #71f5f5; border: #999 solid 1px; padding: 5px;'>
-<p>uparam names: ${!uparam[*]}</p>
 <p>query_string: $QUERY_STRING</p>
+<p>uparam names: ${!uparam[*]}</p>
 <p>content_type: $CONTENT_TYPE</p>
+<p>body: $body</p>
+<p>type: $type</p>
+<p>boundary: $boundary</p>
 <p>post body: <br/>
-<pre>$(cat)</pre>
 </p>
 </div>
 EOF
