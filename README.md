@@ -314,13 +314,12 @@ NOTE: Nginx need fcgiwrap to support cgi.
 - Link server root to git working diretory
   >```shell
   >$ # --archlinux/centos
-  >$ server_root=/srv/19blog
+  >$ sudo rm -rf /srv/19blog
+  >$ sudo ln -s <git_working_diretory> /srv/19blog
   >$
   >$ # --macos
-  >$ server_root=~/srv/19blog
-  >$
-  >$ sudo rm -rf $server_root
-  >$ sudo ln -s <git_working_diretory> $server_root
+  >$ sudo rm -rf ~/srv/19blog
+  >$ sudo ln -s <git_working_diretory> ~/srv/19blog
   >```
 
 ## Demo
