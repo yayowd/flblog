@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# The main page for user admin.
+# Provide the following operations:
+#   1. Add blog;
+
+. ./util/fcgi
+. ./util/common
+
+mkList && list=$RET
+
+html=$(< ./main.html)
+eval echo -n "\"${html//\"/\\\"}\""
