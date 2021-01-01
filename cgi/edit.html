@@ -4,22 +4,97 @@
 	<meta charset='UTF-8'>
 	<title>Edit Article</title>
 	<style type='text/css'>
-		.title {
-			width: 100%;
-		}
-		.content {
-			width: 100%;
-		}
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+        }
+
+        form {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .block {
+            background-color: ghostwhite;
+            border: bisque dashed 1px;
+            padding: 9px 15px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .label {
+            text-align: right;
+            padding-right: 19px;
+            width: 59px;
+        }
+
+        .author {
+            color: dimgray;
+        }
+
+        .text {
+            flex: 1;
+            font-size: 14pt;
+            line-height: 1.5;
+            padding: 9px;
+        }
+
+        input.text {
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+
+        textarea.text {
+            align-self: stretch;
+            margin: 9px 0;
+            letter-spacing: 2px;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        .toolbar {
+            background-color: #cecef8;
+            text-align: center;
+            padding: 9px;
+        }
+
+        .button {
+            width: 99px;
+            height: 33px;
+        }
 	</style>
 </head>
 <body>
 <form method='post' enctype='multipart/form-data'>
-	<p><label>Title:<br>
-		<input class='title' type='text' name='title'></label></p>
-	<p><label>Content:<br>
-		<textarea class='content' name='content' rows='9'></textarea></label></p>
-	<p><label>Image:<input type='file' name='attr'></label></p>
-	<p><input type='submit' value='Save'></p>
+	<input type='hidden' name='id' value='$id'>
+	<div class='block'>
+		<span class='label'>Author:</span>
+		<span class='author'>${REMOTE_USER}</span>
+	</div>
+	<div class='block'>
+		<span class='label'>Title:</span>
+		<input class='text' type='text' name='title' value='$title'>
+	</div>
+	<div class='block content'>
+		<span class='label'>Content:</span>
+		<textarea class='text' name='content'>$content</textarea>
+	</div>
+	<div class='toolbar'>
+		<input class='button' type='reset' value='Reset'>
+		<input class='button' type='submit' value='Save'>
+	</div>
 </form>
 </body>
 </html>

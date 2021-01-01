@@ -1,9 +1,22 @@
 #!/usr/bin/env bash
 
-. ./fcgi
-
 # blog edit
 #  id == NULL -> add
 #  id != NULL -> edit
 
-cat edit.html
+. ./util/fcgi
+. ./util/common
+
+# --save blog from post
+if [ "$REQUEST_METHOD" = 'POST' ]; then
+    mkBlog "${uparam["title"]}" "${uparam["content"]}" && blog=$RET
+    curFile && file=$RET
+    if sed -i "/^<\!--new-blog-->/r"<(echo -n "$blog") "$file"; then
+        echo "Save successed"
+    else
+        perror "Save failed"
+    fi
+fi
+
+html=$(<./edit.html)
+eval echo -n "\"${html//\"/\\\"}\""
