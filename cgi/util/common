@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+
+# blog common functions
+# NOTE: all of functions must called in main shell,
+#       and the result is $RET.
+#       because error check in function,
+#       and terminate response directly when error ocurse.
+
+. ./util/http
+
+# --directories
+cgidir=$(dirname "$0")
+rootdir=$(dirname "$cgidir")
+blogsdir="$rootdir/blogs"
+mkdir -p "$blogsdir"
+
+# --check current user
+function curUser() {
+    if [ -z "$REMOTE_USER" ]; then
+        perror 'Current user is empty.'
+    fi
+    RET=$REMOTE_USER
+}
+
+# --get current blog file
+function curFile() {
+    curUser && user=$RET
+    blogfile="$blogsdir/$user.html"
+    if [ ! -e "$blogfile" ]; then
+        if ! cp "$cgidir/templ/blog.html" "$blogfile"; then
+            perror "Can not copy template file to $user's blog file."
+        fi
+        # write user name to blog file
+        sed -i "s/<\!--user-->/$user/g" "$blogfile"
+    fi
+    if [ ! -w "$blogfile" ]; then
+        perror "Can not write to $user's blog file."
+    fi
+    RET=$blogfile
+}
+
+# --get max id for current user
+function maxId() {
+    curFile && file=$RET
+    RET=$(sed -n "/^<\!--new-blog-->/{n; s/^<li id='\([0-9]*\)'.*/\1/p}" "$file")
+}
+
+# --create a blog node in blog file
+#   the id = maxId + 1
+#   the title and content will be auto encode
+#   $1      title
+#   $2      content
+function mkBlog() {
+    if [ -z "$1" ]; then
+        perror 'Blog title can not be empty.'
+    fi
+    if [ -z "$2" ]; then
+        perror 'Blog content can not be empty.'
+    fi
+    maxId && id=$((${RET:-0} + 1))
+    date=$(date +%s)
+    date2=$(date "+%H:%M:%S %m/%d/%Y")
+    htmlEncode "$1" && title=$RET
+    htmlEncode "$2" && content=$RET
+    IFS= read -r -d '' RET <<EOF
+<li id='$id' publish='0' date='$date'>
+<p>$title</p>
+<p>$date2</p>
+<pre>$content</pre>
+<ul>
+<!--new-reply-->
+</ul>
+</li>
+EOF
+    return 0 # this statement must be included to ensure filling of the return value $RET
+}
+
+# --get my blog list
+function getList() {
+    curFile && file=$RET
+    RET="$(sed -n "/^<li id='/{s/^<li id='\([0-9]*\)' publish='\(.*\)' date='\(.*\)'.*/\1 \2 \3/p; n; s/^<p>\(.*\)<\/p>/\1/p; n; s/^<p>\(.*\)<\/p>/\1/p}" "$file")"
+}
+
+# --make html for my blog list
+function mkList() {
+    getList && list=$RET
+    RET=''
+    while
+        IFS=' ' read -r id publish date
+        [ -n "$id" ]
+    do
+        [ "$publish" = 0 ] && p_='Saved' || p_='Published'
+        IFS= read -r title
+        IFS= read -r date2
+        IFS= read -r -d '' line <<EOF
+<li>
+<span class='id'>$id</span>
+<span class='date'>$date2</span>
+<span class='publish'>$p_</span>
+<a href='edit?id=$id' target='_blank'>$title</a>
+</li>
+EOF
+        RET=$RET$'\n'$line
+    done <<<"$list"
+}

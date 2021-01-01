@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# http common functions
+# NOTE: all of functions must called in main shell,
+#       and the result is $RET.
+#       because error check in function,
+#       and terminate response directly when error ocurse.
+
+# --html encoding
+function htmlEncode() {
+    RET=$(sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' <<<"$*")
+}
+
+# --display error msg and terminate
+function perror() {
+    htmlEncode "$*" && html=$RET
+    RET="<center><h4>ERROR</h4><p>$html</p></center>"
+    # print error msg on page
+    echo "$RET"
+
+    # clear the post body
+    cat >/dev/null
+
+    # terminate response
+    exit 1
+}
