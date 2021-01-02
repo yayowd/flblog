@@ -1,12 +1,12 @@
 # 19blog
 a simple blog, write in bash + vue, run at web server cgi + document root.
 
-## FIRST:
+## FIRST
 >`JUST RUN YOUR BLOG, AND WRITE AND READ.`
 
-## Install
+## INSTALL
 
-#### BASH
+#### Bash
 Most Unix-like systems have the bash shell
 >```shell
 >$ # --unix/linux are generally installed bash
@@ -40,7 +40,7 @@ Most Unix-like systems have the bash shell
 >$ #         and the current work diretory is not you project root dicretory
 >```
 
-#### WEB SERVER
+#### Web Server
 Lightweight web server (such as apache or nginx) capable of running cgi.  
 NOTE: Nginx need fcgiwrap to support cgi.
 
@@ -321,6 +321,12 @@ NOTE: Nginx need fcgiwrap to support cgi.
   >$ sudo rm -rf ~/srv/19blog
   >$ sudo ln -s <git_working_diretory> ~/srv/19blog
   >```
+<pre>
+NOTE: When you clone the respository, there has one test account
+      in web basic authorization file(19blog/cgi/.passwd),
+      the name is admin, passwd is 123.
+      you can also add your dev account into .passwd.
+</pre>
 
-## Demo
+## DEMO
 >[alpsibex's blog](http://blog.alpsibex.cn)
