@@ -1,0 +1,22 @@
+THE CHANGE LOG FOR 19BLOG
+
+TODO
+1.Moved published blog to blog file;
+
+01/04/2021
+1.Solve the problem of special characters and variable references in HTML template files;
+2.Can edit blog;
+3.Can remove blog;
+
+01/03/2021
+1.Plus user blog count after a new blog saved success;
+2.Add back/close link when error ocurse;
+3.Response buffer is composed of three parts: $RESCODE+$RESHEAD+$RESBODY;
+
+01/02/2021
+1.The user blog is counted to a file, obtain id for new blog from it;
+2.Save new blog to draft file;
+3.Add author and date for blog;
+
+01/01/2021
+1.Add admin page and can add a new blog;

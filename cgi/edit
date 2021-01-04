@@ -1,22 +1,40 @@
 #!/usr/bin/env bash
 
 # blog edit
-#  id == NULL -> add
-#  id != NULL -> edit
+# GET:
+#   id == NULL -> add
+#   id != NULL -> edit
+# POST:
+#   id == NULL -> save new
+#   id != NULL -> save edit
 
+. ./util/http
 . ./util/fcgi
 . ./util/common
 
+res200
+
 # --save blog from post
 if [ "$REQUEST_METHOD" = 'POST' ]; then
-    mkBlog "${uparam["title"]}" "${uparam["content"]}" && blog=$RET
-    curFile && file=$RET
-    if sed -i "/^<\!--new-blog-->/r"<(echo -n "$blog") "$file"; then
-        echo "Save successed"
+    if draftSave "${uparam["id"]}" "${uparam["title"]}" "${uparam["content"]}"; then
+        # continue to edit this blog
+        res301 "edit?id=$RET"
     else
-        perror "Save failed"
+        resErr "Save failed"
     fi
 fi
 
-html=$(<./edit.html)
-eval echo -n "\"${html//\"/\\\"}\""
+id=${uparam["id"]}
+if [ -n "$id" ]; then
+    # show close button when error
+    ERRCLOSE=true
+
+    # get blog info
+    draftBlog "$id"
+
+    # make remove button
+    rmbtn="<input class='button remove' type='button' value='Remove' onclick='onRemove()'>"
+fi
+
+# the id tile and content will expand in edit.html
+resFile './edit.html'

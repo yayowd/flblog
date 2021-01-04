@@ -74,26 +74,64 @@
             width: 99px;
             height: 33px;
         }
+
+        .remove {
+            background-color: black;
+            color: white;
+        }
 	</style>
+	<script>
+        let changed = false
+
+        function onChange() {
+            changed = true
+        }
+
+        function onReset() {
+            changed = false
+        }
+
+        function onClose() {
+            if (!changed || confirm("The form has not been saved, Are you sure to close?")) {
+                window.close()
+            }
+        }
+
+        function onSubmit() {
+            // if (!changed) {
+            //     alert("The form is not modified, no need to save.")
+            //     return false
+			// }
+            return changed
+        }
+
+        function onRemove() {
+            if (confirm("Are you sure remove this blog?")) {
+                window.open('remove?id=$id', '_self')
+            }
+        }
+	</script>
 </head>
 <body>
-<form method='post' enctype='multipart/form-data'>
+<form method='post' enctype='multipart/form-data' onchange='onChange()' onreset='onReset()' onsubmit='return onSubmit()'>
 	<input type='hidden' name='id' value='$id'>
 	<div class='block'>
 		<span class='label'>Author:</span>
-		<span class='author'>${REMOTE_USER}</span>
+		<span class='author'>$REMOTE_USER</span>
 	</div>
 	<div class='block'>
 		<span class='label'>Title:</span>
-		<input class='text' type='text' name='title' value='$title'>
+		<input class='text' type='text' name='title' value='$title' required>
 	</div>
 	<div class='block content'>
 		<span class='label'>Content:</span>
-		<textarea class='text' name='content'>$content</textarea>
+		<textarea class='text' name='content' required>$content</textarea>
 	</div>
 	<div class='toolbar'>
-		<input class='button' type='reset' value='Reset'>
 		<input class='button' type='submit' value='Save'>
+		<input class='button' type='button' value='Close' onclick='onClose()'>
+		<input class='button' type='reset' value='Reset'>
+		$rmbtn
 	</div>
 </form>
 </body>

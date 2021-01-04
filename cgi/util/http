@@ -1,26 +1,103 @@
 #!/usr/bin/env bash
 
 # http common functions
+# Dependent files:
+#       no dependent
+# NOTE: should be sourced once at any cgi interface
+#       in order to ensure that the trap event is valid,
+#       please sourced it first
 # NOTE: all of functions must called in main shell,
 #       and the result is $RET.
 #       because error check in function,
 #       and terminate response directly when error ocurse.
 
-# --html encoding
-function htmlEncode() {
-    RET=$(sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' <<<"$*")
-}
-
-# --display error msg and terminate
-function perror() {
-    htmlEncode "$*" && html=$RET
-    RET="<center><h4>ERROR</h4><p>$html</p></center>"
-    # print error msg on page
-    echo "$RET"
-
-    # clear the post body
+# --make response
+#   $RESCODE+$RESHEAD+$RESBODY is all response buffer for one rquest
+RESCODE=''
+RESHEAD=''
+RESBODY=''
+# trap exit event to send response buffer
+function onExit() {
+    # clear the request post body first
     cat >/dev/null
+
+    # ouput response buffer
+    echo "$RESCODE"
+    echo "$RESHEAD"
+    echo -n "$RESBODY"
+}
+trap onExit EXIT
+# set response code
+#   $1  code
+#   $2  descript
+function resCode() {
+    printf -v RESCODE 'HTTP/1.1 %s %s' "$1" "$2"
+    RESHEAD=''
+    RESBODY=''
+}
+# set response header
+#   $1  name
+#   $2  value
+function resHead() {
+    printf -v RESHEAD '%s%s: %s\n' "$RESHEAD" "$1" "$2"
+}
+# append reponse body
+#   $1  text to append to reponse body
+function resBody() {
+    RESBODY=$RESBODY$1
+}
+# reponse 200
+function res200() {
+    resCode 200 'OK'
+    resHead 'Content-Type' 'text/html; charset=UTF-8'
+}
+# response 301
+#   $1  relocation url
+function res301() {
+    resCode 301 'Moved Permanently'
+    resHead 'Location' "$1"
+}
+# response a html template file
+# support var expand
+#   $1  file path
+function resFile() {
+    if [ -z "$1" ]; then
+        resErr 'File is empty when response a html template file.'
+    fi
+    # More difficult here
+    # Use single quotes to avoid bash string escaping
+    # NOTE: the sed regular expression escaping
+    html=$(sed 's/\(\\\)\([^$]\)/\1\1\2/g; s/"/\\"/g; s/`/\\`/g;' "$1")
+    resBody "$(eval echo -n "\"$html\"")"
+}
+# response error and terminate
+#   $ERRCLOSE == true render close button on error screen
+#   $ERRCLOSE == false render back button on error screen
+function resErr() {
+    htmlEncode "$*" && html=$RET
+
+    if [ "$ERRCLOSE" = true ]; then
+        errBtn="<a href='#' onclick='window.close()'>CLOSE</a>"
+    else
+        errBtn="<a href='#' onclick='history.back()'>BACK</a>"
+    fi
+
+    # set error msg as reponse body
+    RESBODY="<div style='width=100%; height=100%; text-align: center;'> \
+    <h4>ERROR</h4> \
+    <p>$html</p> \
+    <p>$errBtn</p> \
+    </div>"
 
     # terminate response
     exit 1
+}
+
+# --html encoding
+function htmlEncode() {
+    RET=$(sed "s/\&/\&amp;/g; \
+    s/</\&lt;/g; \
+    s/>/\&gt;/g; \
+    s/\"/\&quot;/g; \
+    s/'/\&#39;/g" <<<"$*")
 }

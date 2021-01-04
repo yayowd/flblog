@@ -1,15 +1,13 @@
 #!/usr/bin/env bash
 
 # cgi common functions
+# Dependent files:
+#       ./http
 # NOTE: should be sourced once at any cgi interface
-#       in order to ensure that the trap event is valid,
-#       please sourced it first
 # NOTE: all of functions must called in main shell,
 #       and the result is $RET.
 #       because error check in function,
 #       and terminate response directly when error ocurse.
-
-. ./util/http
 
 # --fastcgi params list
 #
@@ -38,18 +36,6 @@
 #
 # fastcgi_param REMOTE_USER         $remote_user;
 # fastcgi_param PATH_INFO           $1;
-
-# --trap event
-#function onExit() {
-#    cat <<EOF
-#    <hr/>
-#    <center style="color: darkgray; font-size: xx-small; font-weight: bold;">BLOG ON BASH & VUE</center>
-#EOF
-#}
-#trap onExit EXIT
-
-# --print standard file header
-echo -e "Content-Type: text/html; charset=UTF-8\n"
 
 # --pasrse request params
 #   need bash v4.0+
@@ -90,7 +76,7 @@ function readBody() {
                 # check attr file type
                 if [[ -n "$ctype" ]]; then
                     if [[ -n "$filename" && ! "$ctype" =~ ^text/ ]]; then
-                        perror "attr file text only, current: [$ctype] [$filename]"
+                        resErr "attr file text only, current: [$ctype] [$filename]"
                     fi
                     read -r -d $'\r' _ # skip blank line when have content type line
                 fi
