@@ -245,6 +245,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >    listen          80;
 >    listen          [::]:80;
 >    server_name     $server_name;
+>    root            $server_root;
 >    access_log      ${log_path}/19blog.access.log;
 >    error_log       ${log_path}/19blog.error.log;
 >    location / {
