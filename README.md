@@ -221,22 +221,21 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >```shell
 >$ # --archlinux
 >$ log_path=/var/log/nginx
->$ home_root=/srv/19blog/home
->$ blogs_root=/srv/19blog/blogs
+>$ server_root=/srv/19blog
 >$ socket_path=/run/fcgiwrap.sock
 >$
 >$ # --centos
 >$ log_path=/var/log/nginx
->$ home_root=/srv/19blog/home
->$ blogs_root=/srv/19blog/blogs
+>$ server_root=/srv/19blog
 >$ socket_path=/run/fcgiwrap/fcgiwrap-nginx.sock
 >$
 >$ # --macos
 >$ log_path=/usr/local/var/log/nginx
->$ home_root=$(cd ~; pwd)/srv/19blog/home
->$ blogs_root=$(cd ~; pwd)/srv/19blog/blogs
+>$ server_root=$(cd ~; pwd)/srv/19blog
 >$ socket_path=/usr/local/var/run/fastcgi.sock
 >$
+>$ home_root=${server_root}/home
+>$ blogs_root=${server_root}/blogs
 >$ passwd_file=${server_root}/cgi/.passwd
 >$ server_name=domain.you
 >$
