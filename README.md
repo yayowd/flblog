@@ -9,7 +9,7 @@ a simple blog, write in bash + vue, run at web server cgi + document root.
 #### Bash
 Most Unix-like systems have the bash shell
 >```shell
->$ # --unix/linux are generally installed bash
+>$ # --archlinux/centos are generally installed bash
 >$ #   make sure the bash version is 4.0+
 >$
 >$ # --macos also installed bash, but the version is older
@@ -139,21 +139,30 @@ NOTE: Nginx need fcgiwrap to support cgi.
 - directories
 >```shell
 >$ # NOTE: The server root is which directory your like.
->$ #       may be the /srv or /data/srv or ~/srv
->$ #       let's assume it is /srv(unix/linux) or ~/srv(macos)
->$ sudo mkdir -p /srv/19blog/cgi     # unix/linux
->$      mkdir -p ~/srv/19blog/cgi    # macos
+>$ #       may be the /srv or ~/srv or /data/srv
+>$ #       let's assume it is /srv(archlinux/centos) or ~/srv(macos)
 >$
 >$ # --archlinux
+>$ sudo mkdir -p /srv/19blog/cgi
+>$ sudo mkdir -p /srv/19blog/home
+>$ sudo mkdir -p /srv/19blog/blogs
 >$ sudo chown -R http:http /srv/19blog
 >$
 >$ # --centos
+>$ sudo mkdir -p /srv/19blog/cgi
+>$ sudo mkdir -p /srv/19blog/home
+>$ sudo mkdir -p /srv/19blog/blogs
 >$ sudo chown -R nginx:nginx /srv/19blog
 >$ sudo chcon -Ru system_u /srv/19blog
 >$ sudo chcon -Rt httpd_sys_content_t /srv/19blog
 >$ # NOTE: In centos 8.2, chcon with error:
 >$ #       "chcon: can't apply partial context to unlabeled file 'xxx'"
 >$ #       please ignore it.
+>$
+>$ # --macos
+>$ mkdir -p ~/srv/19blog/cgi
+>$ mkdir -p ~/srv/19blog/home
+>$ mkdir -p ~/srv/19blog/blogs
 >```
 - web basic authorization
 >```shell
@@ -194,17 +203,17 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >EOF
 >$
 >$ # --archlinux
->$ sudo -u http tee /srv/19blog/index.html <<< "$index"
+>$ sudo -u http tee /srv/19blog/home/index.html <<< "$index"
 >$ sudo -u http tee /srv/19blog/cgi/test <<< "$test"
 >$ sudo chmod +x /srv/19blog/cgi/test
 >$
 >$ # --centos
->$ sudo -u nginx tee /srv/19blog/index.html <<< "$index"
+>$ sudo -u nginx tee /srv/19blog/home/index.html <<< "$index"
 >$ sudo -u nginx tee /srv/19blog/cgi/test <<< "$test"
 >$ sudo chmod +x /srv/19blog/cgi/test
 >$
 >$ # --macos
->$ tee ~/srv/19blog/index.html <<< "$index"
+>$ tee ~/srv/19blog/home/index.html <<< "$index"
 >$ tee ~/srv/19blog/cgi/test <<< "$test"
 >$ chmod +x ~/srv/19blog/cgi/test
 >```
@@ -212,17 +221,20 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >```shell
 >$ # --archlinux
 >$ log_path=/var/log/nginx
->$ server_root=/srv/19blog
+>$ home_root=/srv/19blog/home
+>$ blogs_root=/srv/19blog/blogs
 >$ socket_path=/run/fcgiwrap.sock
 >$
 >$ # --centos
 >$ log_path=/var/log/nginx
->$ server_root=/srv/19blog
+>$ home_root=/srv/19blog/home
+>$ blogs_root=/srv/19blog/blogs
 >$ socket_path=/run/fcgiwrap/fcgiwrap-nginx.sock
 >$
 >$ # --macos
 >$ log_path=/usr/local/var/log/nginx
->$ server_root=$(cd ~; pwd)/srv/19blog
+>$ home_root=$(cd ~; pwd)/srv/19blog/home
+>$ blogs_root=$(cd ~; pwd)/srv/19blog/blogs
 >$ socket_path=/usr/local/var/run/fastcgi.sock
 >$
 >$ passwd_file=${server_root}/cgi/.passwd
@@ -234,17 +246,23 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >    listen          80;
 >    listen          [::]:80;
 >    server_name     $server_name;
->    root            $server_root;
 >    access_log      ${log_path}/19blog.access.log;
 >    error_log       ${log_path}/19blog.error.log;
 >    location / {
+>        root        $home_root;
 >        # First attemp to serve request as file, then
 >        # as directory, then fall back to displaying a 404.
->        try_files \$uri \$uri/ =404;
+>        try_files   \$uri \$uri/ @blogs;
 >    }
->    location ~ /cgi/ {
+>    location @blogs {
+>        root        $blogs_root;
+>        # First attemp to serve request as file, then
+>        # as directory, then fall back to displaying a 404.
+>        try_files   \$uri \$uri.html =404;
+>    }
+>    location ~ /cgi {
 >        # basic authorization
->        auth_basic              "19blog admin login";
+>        auth_basic              "19blog login";
 >        auth_basic_user_file    $passwd_file;
 >        # buffer settings
 >        gzip                    off;
@@ -327,6 +345,15 @@ NOTE: When you clone the respository, there has one test account
       the name is admin, passwd is 123.
       you can also add your dev account into .passwd.
 </pre>
+
+#### DIRECTORY LIST
+```
+├── app          webapp source code
+├── blogs        runtime diretory, save all user data
+│   └── config    status and statistics
+├── cgi          blog api for manage and webapp
+└── home         distribution directory of webapp
+```
 
 ## DEMO
 >[alpsibex's blog](http://blog.alpsibex.cn)
