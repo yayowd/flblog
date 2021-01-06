@@ -145,15 +145,15 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ # --archlinux
 >$ sudo mkdir -p /srv/19blog/home
 >$ sudo mkdir -p /srv/19blog/blogs
->$ sudo mkdir -p /srv/19blog/cgi/manage
 >$ sudo mkdir -p /srv/19blog/cgi/api
+>$ sudo mkdir -p /srv/19blog/cgi/manage
 >$ sudo chown -R http:http /srv/19blog
 >$
 >$ # --centos
 >$ sudo mkdir -p /srv/19blog/home
 >$ sudo mkdir -p /srv/19blog/blogs
->$ sudo mkdir -p /srv/19blog/cgi/manage
 >$ sudo mkdir -p /srv/19blog/cgi/api
+>$ sudo mkdir -p /srv/19blog/cgi/manage
 >$ sudo chown -R nginx:nginx /srv/19blog
 >$ sudo chcon -Ru system_u /srv/19blog
 >$ sudo chcon -Rt httpd_sys_content_t /srv/19blog
@@ -164,8 +164,8 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ # --macos
 >$ mkdir -p ~/srv/19blog/home
 >$ mkdir -p ~/srv/19blog/blogs
->$ mkdir -p ~/srv/19blog/cgi/manage
 >$ mkdir -p ~/srv/19blog/cgi/api
+>$ mkdir -p ~/srv/19blog/cgi/manage
 >```
 - web basic authorization
 >```shell
@@ -377,7 +377,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
   >```
 <pre>
 NOTE: When you clone the respository, there has one test account
-      in web basic authorization file(19blog/cgi/.passwd),
+      in web basic authorization file(19blog/cgi/manage/.passwd),
       the name is admin, passwd is 123.
       you can also add your dev account into .passwd.
 </pre>
@@ -385,9 +385,11 @@ NOTE: When you clone the respository, there has one test account
 #### DIRECTORY LIST
 ```
 ├── app          webapp source code
-├── blogs        runtime diretory, save all user data
-│   └── config    status and statistics
-├── cgi          blog api for manage and webapp
+├── blogs        runtime directory, save all user data
+│   └── config     status and statistics
+├── cgi          shell files for fastcgi
+│   ├── api        api for webapps
+│   └── manage     manager pages
 └── home         distribution directory of webapp
 ```
 

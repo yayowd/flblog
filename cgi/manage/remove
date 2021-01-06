@@ -21,14 +21,17 @@
 # Provide the following operations:
 #   1. Add blog;
 
-. ./util/http
-. ./util/fcgi
-. ./util/common
+. ../util/http
+. ../util/fcgi
+. ../util/common
 
 res200
 
-# get draft list for current user
-draftList && list=$RET
+# show close button when error
+ERRCLOSE=true
 
-# the list will expand in main.html
-resFile './main.html'
+# remove blog
+rmBlog "${uparam["id"]}"
+
+# output template remove.html
+resFile './remove.html'

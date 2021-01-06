@@ -1,9 +1,16 @@
 {
     "name": "19blog",
     "version": "0.0.1",
+    "author": "yayowd",
+    "license": "GPL-3.0",
+    "bugs": {
+        "url": "https://github.com/yayowd/19blog/issues"
+    },
+    "homepage": "https://github.com/yayowd/19blog#readme",
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "demo": "vite build --mode demo"
     },
     "dependencies": {
         "ramda": "^0.27.1",

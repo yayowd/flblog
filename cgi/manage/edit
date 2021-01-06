@@ -17,8 +17,41 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-echo "HTTP/1.1 200 OK"
-echo "Content-Type: text/html; charset=UTF-8"
-echo
-echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
-echo "<h2>cgi test success</h2>bash version($BASH_VERSION)<br/>run as usr($(whoami))<br/><br/>$(date)"
+# blog edit
+# GET:
+#   id == NULL -> add
+#   id != NULL -> edit
+# POST:
+#   id == NULL -> save new
+#   id != NULL -> save edit
+
+. ../util/http
+. ../util/fcgi
+. ../util/common
+
+res200
+
+# --save blog from post
+if [ "$REQUEST_METHOD" = 'POST' ]; then
+    if draftSave "${uparam["id"]}" "${uparam["title"]}" "${uparam["content"]}"; then
+        # continue to edit this blog
+        res301 "edit?id=$RET"
+    else
+        resErr "Save failed"
+    fi
+fi
+
+id=${uparam["id"]}
+if [ -n "$id" ]; then
+    # show close button when error
+    ERRCLOSE=true
+
+    # get blog info
+    draftBlog "$id"
+
+    # make remove button
+    rmbtn="<input class='button remove' type='button' value='Remove' onclick='onRemove()'>"
+fi
+
+# the id tile and content will expand in edit.html
+resFile './edit.html'

@@ -17,21 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# The main page for user admin.
-# Provide the following operations:
-#   1. Add blog;
-
-. ./util/http
-. ./util/fcgi
-. ./util/common
-
-res200
-
-# show close button when error
-ERRCLOSE=true
-
-# remove blog
-rmBlog "${uparam["id"]}"
-
-# output template remove.html
-resFile './remove.html'
+echo "HTTP/1.1 200 OK"
+echo "Content-Type: text/html; charset=UTF-8"
+echo
+echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
+echo "<h2>API test success</h2>bash version($BASH_VERSION)<br/>run as usr($(whoami))<br/><br/>$(date)"

@@ -1,7 +1,8 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3.0 + Vite...gogogo...yy..mm" />
+  <HelloWorld msg="Hello Vue 3.0 +4343 Vite...gogogo...yy..mm" />
   <p class="pa" v-for="a in as">{{a}}</p>
+  <p>|||{{env}}|||</p>
 </template>
 
 <script>
@@ -16,6 +17,7 @@ export default {
   data() {
     return {
       as: [],
+      env: import.meta.env,
     }
   },
   mounted() {

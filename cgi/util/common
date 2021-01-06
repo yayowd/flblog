@@ -27,8 +27,10 @@
 #       and terminate response directly when error ocurse.
 
 # --directories
-cgidir=$(dirname "$0")
+rundir=$(dirname "$0")
+cgidir=$(dirname "$rundir")
 rootdir=$(dirname "$cgidir")
+templdir="$cgidir/templ"
 blogsdir="$rootdir/blogs"
 configdir="$blogsdir/config"
 totalfile="$configdir/total"
@@ -70,7 +72,7 @@ function curFile() {
 #   result is draft file path
 function draftFile() {
     curUser && user=$RET
-    curFile "$blogsdir/${user}_draft.html" "$cgidir/templ/draft.html"
+    curFile "$blogsdir/${user}_draft.html" "$templdir/draft.html"
 }
 
 # --get next blog id for current user

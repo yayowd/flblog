@@ -1,10 +1,13 @@
 ### THE CHANGE LOG FOR 19BLOG
 
 #### TODO
-* Moved published blog to blog file
-* Add index page for bloh site
+* Move published blog to blog file
+* Add home page for blog site
 * Can register a new user
 * Publish the blog system as a demonstration
+
+#### 01/06/2021
+* Improve the project directory structure
 
 #### 01/05/2021
 * Add license info to source files
