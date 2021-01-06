@@ -71,13 +71,13 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ fcgiwrap -h
 >$ # create auxiliary files, NOTE the fcgiwrap version is 1.1.0 here
 >$ fcgiwrap_root=$(brew --cellar fcgiwrap)/1.1.0
->$ fcgiwrap_start=${fcgiwrap_root}/start.sh
->$ tee ${fcgiwrap_start} <<-'EOF'
+>$ fcgiwrap_start=$fcgiwrap_root/start.sh
+>$ tee $fcgiwrap_start <<-'EOF'
 >rm -rf /usr/local/var/run/fastcgi.sock
 >exec /usr/local/sbin/fcgiwrap -c 1 -f -s unix:/usr/local/var/run/fastcgi.sock
 >EOF
->$ chmod +x ${fcgiwrap_start}
->$ tee ${fcgiwrap_root}/homebrew.mxcl.fcgiwrap.plist <<-EOF
+>$ chmod +x $fcgiwrap_start
+>$ tee $fcgiwrap_root/homebrew.mxcl.fcgiwrap.plist <<-EOF
 ><?xml version="1.0" encoding="UTF-8"?>
 ><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 ><plist version="1.0">
@@ -90,7 +90,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >    <true/>
 >    <key>ProgramArguments</key>
 >    <array>
->        <string>${fcgiwrap_start}</string>
+>        <string>$fcgiwrap_start</string>
 >    </array>
 >    <key>WorkingDirectory</key>
 >    <string>/usr/local</string>
@@ -143,15 +143,17 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ #       let's assume it is /srv(archlinux/centos) or ~/srv(macos)
 >$
 >$ # --archlinux
->$ sudo mkdir -p /srv/19blog/cgi
 >$ sudo mkdir -p /srv/19blog/home
 >$ sudo mkdir -p /srv/19blog/blogs
+>$ sudo mkdir -p /srv/19blog/cgi/manage
+>$ sudo mkdir -p /srv/19blog/cgi/api
 >$ sudo chown -R http:http /srv/19blog
 >$
 >$ # --centos
->$ sudo mkdir -p /srv/19blog/cgi
 >$ sudo mkdir -p /srv/19blog/home
 >$ sudo mkdir -p /srv/19blog/blogs
+>$ sudo mkdir -p /srv/19blog/cgi/manage
+>$ sudo mkdir -p /srv/19blog/cgi/api
 >$ sudo chown -R nginx:nginx /srv/19blog
 >$ sudo chcon -Ru system_u /srv/19blog
 >$ sudo chcon -Rt httpd_sys_content_t /srv/19blog
@@ -160,9 +162,10 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ #       please ignore it.
 >$
 >$ # --macos
->$ mkdir -p ~/srv/19blog/cgi
 >$ mkdir -p ~/srv/19blog/home
 >$ mkdir -p ~/srv/19blog/blogs
+>$ mkdir -p ~/srv/19blog/cgi/manage
+>$ mkdir -p ~/srv/19blog/cgi/api
 >```
 - web basic authorization
 >```shell
@@ -170,52 +173,71 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ # install tools first
 >$ sudo pacman -S apache
 >$ # create admin account
->$ sudo -u http  touch /srv/19blog/cgi/.passwd
->$ sudo -u http  htpasswd -b /srv/19blog/cgi/.passwd <name> <passwd>
+>$ sudo -u http  touch /srv/19blog/cgi/manage/.passwd
+>$ sudo -u http  htpasswd -b /srv/19blog/cgi/manage/.passwd <name> <passwd>
 >$
 >$ # --centos
 >$ # install tools first
 >$ sudo yum install httpd-tools
 >$ # create admin account
->$ sudo -u nginx touch /srv/19blog/cgi/.passwd
->$ sudo -u nginx htpasswd -b /srv/19blog/cgi/.passwd <name> <passwd>
+>$ sudo -u nginx touch /srv/19blog/cgi/manage/.passwd
+>$ sudo -u nginx htpasswd -b /srv/19blog/cgi/manage/.passwd <name> <passwd>
 >$
 >$ # --macos
 >$ # create admin account
->$ touch ~/srv/19blog/cgi/.passwd
->$ htpasswd -b ~/srv/19blog/cgi/.passwd <name> <passwd>
+>$ touch ~/srv/19blog/cgi/manage/.passwd
+>$ htpasswd -b ~/srv/19blog/cgi/manage/.passwd <name> <passwd>
 >$
->$ # NOTE: DO NOT place passwd file in 19blog root directory,
->$ #       because 19blog root directory will be accessed directly through the web.       
+>$ # NOTE: ONLY manager cgi need authorized.
 >```
 - make demo files
 >```shell
->$ read -d '' index <<-'EOF'
+>$ read -d '' home <<-'EOF'
 ><h2>Welcom to 19blog</h2>
 >EOF
->$ read -d '' test <<-'EOF'
+>$ read -d '' blogs <<-'EOF'
+><h2>Test's blog</h2>
+>EOF
+>$ read -d '' manage <<-'EOF'
 >#!/usr/bin/env bash
 >echo "HTTP/1.1 200 OK"
 >echo "Content-Type: text/html; charset=UTF-8"
 >echo
 >echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
->echo "<h2>cgi test success</h2>bash version($BASH_VERSION)<br/>run as usr($(whoami))<br/><br/>$(date)"
+>echo "<h2>Manage test success</h2>bash version($BASH_VERSION)<br/>run as usr($(whoami))<br/><br/>$(date)"
+>EOF
+>$ read -d '' api <<-'EOF'
+>#!/usr/bin/env bash
+>echo "HTTP/1.1 200 OK"
+>echo "Content-Type: text/html; charset=UTF-8"
+>echo
+>echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
+>echo "<h2>API test success</h2>bash version($BASH_VERSION)<br/>run as usr($(whoami))<br/><br/>$(date)"
 >EOF
 >$
 >$ # --archlinux
->$ sudo -u http tee /srv/19blog/home/index.html <<< "$index"
->$ sudo -u http tee /srv/19blog/cgi/test <<< "$test"
->$ sudo chmod +x /srv/19blog/cgi/test
+>$ sudo -u http tee /srv/19blog/home/index.html <<< "$home"
+>$ sudo -u http tee /srv/19blog/blogs/test.html <<< "$blogs"
+>$ sudo -u http tee /srv/19blog/cgi/manage/test <<< "$manage"
+>$ sudo -u http tee /srv/19blog/cgi/api/test <<< "$api"
+>$ sudo chmod +x /srv/19blog/cgi/manage/test
+>$ sudo chmod +x /srv/19blog/cgi/api/test
 >$
 >$ # --centos
->$ sudo -u nginx tee /srv/19blog/home/index.html <<< "$index"
->$ sudo -u nginx tee /srv/19blog/cgi/test <<< "$test"
->$ sudo chmod +x /srv/19blog/cgi/test
+>$ sudo -u nginx tee /srv/19blog/home/index.html <<< "$home"
+>$ sudo -u nginx tee /srv/19blog/blogs/test.html <<< "$blogs"
+>$ sudo -u nginx tee /srv/19blog/cgi/manage/test <<< "$manage"
+>$ sudo -u nginx tee /srv/19blog/cgi/api/test <<< "$api"
+>$ sudo chmod +x /srv/19blog/cgi/manage/test
+>$ sudo chmod +x /srv/19blog/cgi/api/test
 >$
 >$ # --macos
->$ tee ~/srv/19blog/home/index.html <<< "$index"
->$ tee ~/srv/19blog/cgi/test <<< "$test"
->$ chmod +x ~/srv/19blog/cgi/test
+>$ tee ~/srv/19blog/home/index.html <<< "$home"
+>$ tee ~/srv/19blog/blogs/test.html <<< "$blogs"
+>$ tee ~/srv/19blog/cgi/manage/test <<< "$manage"
+>$ tee ~/srv/19blog/cgi/api/test <<< "$api"
+>$ chmod +x ~/srv/19blog/cgi/manage/test
+>$ chmod +x ~/srv/19blog/cgi/api/test
 >```
 - config nginx
 >```shell
@@ -234,9 +256,10 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ server_root=$(cd ~; pwd)/srv/19blog
 >$ socket_path=/usr/local/var/run/fastcgi.sock
 >$
->$ home_root=${server_root}/home
->$ blogs_root=${server_root}/blogs
->$ passwd_file=${server_root}/cgi/.passwd
+>$ home_root=$server_root/home
+>$ blogs_root=$server_root/blogs
+>$ manage_root=$server_root/cgi/manage
+>$ api_root=$server_root/cgi/api
 >$ server_name=domain.you
 >$
 >$ read -d '' config <<-EOF
@@ -245,9 +268,8 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >    listen          80;
 >    listen          [::]:80;
 >    server_name     $server_name;
->    root            $server_root;
->    access_log      ${log_path}/19blog.access.log;
->    error_log       ${log_path}/19blog.error.log;
+>    access_log      $log_path/19blog.access.log;
+>    error_log       $log_path/19blog.error.log;
 >    location / {
 >        root        $home_root;
 >        # First attemp to serve request as file, then
@@ -260,10 +282,11 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >        # as directory, then fall back to displaying a 404.
 >        try_files   \$uri \$uri.html =404;
 >    }
->    location ~ /cgi {
+>    location ~ /manage/ {
+>        alias                    $manage_root/;
 >        # basic authorization
 >        auth_basic              "19blog login";
->        auth_basic_user_file    $passwd_file;
+>        auth_basic_user_file    $manage_root/.passwd;
 >        # buffer settings
 >        gzip                    off;
 >        client_max_body_size    0;
@@ -273,7 +296,20 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >        include                 fastcgi.conf;
 >        fastcgi_param           REMOTE_USER \$remote_user;
 >        fastcgi_param           PATH_INFO \$1;
->        fastcgi_pass            unix:${socket_path};
+>        fastcgi_pass            unix:$socket_path;
+>    }
+>    location ~ /api/ {
+>        alias                    $api_root/;
+>        # buffer settings
+>        gzip                    off;
+>        client_max_body_size    0;
+>        fastcgi_buffer_size     32k;
+>        fastcgi_buffers         32 32k;
+>        # fastcgi settings
+>        include                 fastcgi.conf;
+>        fastcgi_param           REMOTE_USER \$remote_user;
+>        fastcgi_param           PATH_INFO \$1;
+>        fastcgi_pass            unix:$socket_path;
 >    }
 >}
 >EOF
