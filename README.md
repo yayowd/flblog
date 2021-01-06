@@ -198,14 +198,6 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ read -d '' blogs <<-'EOF'
 ><h2>Test's blog</h2>
 >EOF
->$ read -d '' manage <<-'EOF'
->#!/usr/bin/env bash
->echo "HTTP/1.1 200 OK"
->echo "Content-Type: text/html; charset=UTF-8"
->echo
->echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
->echo "<h2>Manage test success</h2>bash version($BASH_VERSION)<br/>run as usr($(whoami))<br/><br/>$(date)"
->EOF
 >$ read -d '' api <<-'EOF'
 >#!/usr/bin/env bash
 >echo "HTTP/1.1 200 OK"
@@ -214,30 +206,38 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
 >echo "<h2>API test success</h2>bash version($BASH_VERSION)<br/>run as usr($(whoami))<br/><br/>$(date)"
 >EOF
+>$ read -d '' manage <<-'EOF'
+>#!/usr/bin/env bash
+>echo "HTTP/1.1 200 OK"
+>echo "Content-Type: text/html; charset=UTF-8"
+>echo
+>echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
+>echo "<h2>Manage test success</h2>bash version($BASH_VERSION)<br/>run as usr($(whoami))<br/><br/>$(date)"
+>EOF
 >$
 >$ # --archlinux
 >$ sudo -u http tee /srv/19blog/home/index.html <<< "$home"
 >$ sudo -u http tee /srv/19blog/blogs/test.html <<< "$blogs"
->$ sudo -u http tee /srv/19blog/cgi/manage/test <<< "$manage"
 >$ sudo -u http tee /srv/19blog/cgi/api/test <<< "$api"
->$ sudo chmod +x /srv/19blog/cgi/manage/test
+>$ sudo -u http tee /srv/19blog/cgi/manage/test <<< "$manage"
 >$ sudo chmod +x /srv/19blog/cgi/api/test
+>$ sudo chmod +x /srv/19blog/cgi/manage/test
 >$
 >$ # --centos
 >$ sudo -u nginx tee /srv/19blog/home/index.html <<< "$home"
 >$ sudo -u nginx tee /srv/19blog/blogs/test.html <<< "$blogs"
->$ sudo -u nginx tee /srv/19blog/cgi/manage/test <<< "$manage"
 >$ sudo -u nginx tee /srv/19blog/cgi/api/test <<< "$api"
->$ sudo chmod +x /srv/19blog/cgi/manage/test
+>$ sudo -u nginx tee /srv/19blog/cgi/manage/test <<< "$manage"
 >$ sudo chmod +x /srv/19blog/cgi/api/test
+>$ sudo chmod +x /srv/19blog/cgi/manage/test
 >$
 >$ # --macos
 >$ tee ~/srv/19blog/home/index.html <<< "$home"
 >$ tee ~/srv/19blog/blogs/test.html <<< "$blogs"
->$ tee ~/srv/19blog/cgi/manage/test <<< "$manage"
 >$ tee ~/srv/19blog/cgi/api/test <<< "$api"
->$ chmod +x ~/srv/19blog/cgi/manage/test
+>$ tee ~/srv/19blog/cgi/manage/test <<< "$manage"
 >$ chmod +x ~/srv/19blog/cgi/api/test
+>$ chmod +x ~/srv/19blog/cgi/manage/test
 >```
 - config nginx
 >```shell
@@ -258,8 +258,8 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$
 >$ home_root=$server_root/home
 >$ blogs_root=$server_root/blogs
->$ manage_root=$server_root/cgi/manage
 >$ api_root=$server_root/cgi/api
+>$ manage_root=$server_root/cgi/manage
 >$ server_name=domain.you
 >$
 >$ read -d '' config <<-EOF
@@ -282,11 +282,8 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >        # as directory, then fall back to displaying a 404.
 >        try_files   \$uri \$uri.html =404;
 >    }
->    location ~ /manage/ {
->        alias                    $manage_root/;
->        # basic authorization
->        auth_basic              "19blog login";
->        auth_basic_user_file    $manage_root/.passwd;
+>    location ~ /api/ {
+>        alias                    $api_root/;
 >        # buffer settings
 >        gzip                    off;
 >        client_max_body_size    0;
@@ -298,8 +295,11 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >        fastcgi_param           PATH_INFO \$1;
 >        fastcgi_pass            unix:$socket_path;
 >    }
->    location ~ /api/ {
->        alias                    $api_root/;
+>    location ~ /manage/ {
+>        alias                    $manage_root/;
+>        # basic authorization
+>        auth_basic              "19blog login";
+>        auth_basic_user_file    $manage_root/.passwd;
 >        # buffer settings
 >        gzip                    off;
 >        client_max_body_size    0;
@@ -339,10 +339,11 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >```
 - check install
 >```shell
-> http://your.domain/          -> Welcom to 19blog
-> http://your.domain/cgi       -> Ask login: enter the name and passwd set above
->                              -> 403 Forbidden
-> http://your.domain/cgi/test  -> cgi test success
+> http://your.domain/               -> Welcom to 19blog
+> http://your.domain/test           -> Test's blog
+> http://your.domain/api/test       -> API test success
+> http://your.domain/manage/test    -> Ask login: enter the name and passwd set above
+>                                   -> Manage test success
 >
 >$ # NOTE: If you see the welcome page of nginx, 
 >$ #       please modify the domain information in the configuration file
