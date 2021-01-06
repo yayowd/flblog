@@ -258,8 +258,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$
 >$ home_root=$server_root/home
 >$ blogs_root=$server_root/blogs
->$ api_root=$server_root/cgi/api
->$ manage_root=$server_root/cgi/manage
+>$ cgi_root=$server_root/cgi
 >$ server_name=domain.you
 >$
 >$ read -d '' config <<-EOF
@@ -283,7 +282,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >        try_files   \$uri \$uri.html =404;
 >    }
 >    location ~ /api/ {
->        alias                    $api_root/;
+>        root                    $cgi_root;
 >        # buffer settings
 >        gzip                    off;
 >        client_max_body_size    0;
@@ -296,10 +295,10 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >        fastcgi_pass            unix:$socket_path;
 >    }
 >    location ~ /manage/ {
->        alias                    $manage_root/;
+>        root                    $cgi_root;
 >        # basic authorization
 >        auth_basic              "19blog login";
->        auth_basic_user_file    $manage_root/.passwd;
+>        auth_basic_user_file    $cgi_root/manage/.passwd;
 >        # buffer settings
 >        gzip                    off;
 >        client_max_body_size    0;
