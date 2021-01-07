@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# The main page for user admin.
+# The index page for user blog manager.
 # Provide the following operations:
 #   1. Add blog;
 
@@ -30,5 +30,5 @@ res200
 # get draft list for current user
 draftList && list=$RET
 
-# the list will expand in main.html
-resFile './main.html'
+# the list will expand in index.html
+resFile './index.html'
