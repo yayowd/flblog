@@ -4,9 +4,12 @@
 * Move published blog to blog file
 * Add home page for blog site
 * Can register a new user
-* Publish the blog system as a demonstration
+
+#### 01/07/2021
+* Adjust the ui of the management page
 
 #### 01/06/2021
+* Publish the blog system as a demonstration
 * Improve the project directory structure
 
 #### 01/05/2021
