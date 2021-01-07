@@ -271,15 +271,14 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >    error_log       $log_path/19blog.error.log;
 >    location / {
 >        root        $home_root;
->        # First attemp to serve request as file, then
->        # as directory, then fall back to displaying a 404.
 >        try_files   \$uri \$uri/ @blogs;
 >    }
 >    location @blogs {
 >        root        $blogs_root;
->        # First attemp to serve request as file, then
->        # as directory, then fall back to displaying a 404.
 >        try_files   \$uri \$uri.html =404;
+>    }
+>    location /config/ {
+>        deny all;
 >    }
 >    location ~ /api/ {
 >        root                    $cgi_root;
@@ -293,6 +292,9 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >        fastcgi_param           REMOTE_USER \$remote_user;
 >        fastcgi_param           PATH_INFO \$1;
 >        fastcgi_pass            unix:$socket_path;
+>    }
+>    location = /manage {
+>        return \$uri/index
 >    }
 >    location ~ /manage/ {
 >        root                    $cgi_root;
