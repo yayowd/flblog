@@ -293,9 +293,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >        fastcgi_param           PATH_INFO \$1;
 >        fastcgi_pass            unix:$socket_path;
 >    }
->    location = /manage {
->        return \$uri/index
->    }
+>    rewrite ^/manage$ /manage/index permanent;
 >    location ~ /manage/ {
 >        root                    $cgi_root;
 >        # basic authorization
