@@ -115,7 +115,9 @@ function mkBlog() {
 <li id='$1' tc='${4:-$ndate}' tu='$ndate'>
 <p>$title</p>
 <p>$user $sdate</p>
-<pre>$content</pre>
+<pre>
+$content
+</pre>
 <ul>
 <!--new-reply-->
 </ul>
@@ -242,11 +244,8 @@ function getContent() {
     n; s/^<p>\(.*\)<\/p>/\1/p; \
     n; s/^<p>\(.*\)<\/p>/\1/p; \
     n; \
-    s/^<pre>\(.*\)<\/pre>$/\1/p; t; \
-    s/^<pre>\(.*\)/\1/p; \
-    :jc \
-    n; \
-    s/\(.*\)<\/pre>$/\1/p; t; \
+    :jc n; \
+    /^<\/pre>$/b; \
     p; b jc; \
     }" "$1")"$'\r' # Add end mark to avoid ending newline when reading
 }
