@@ -1,21 +1,3 @@
-<!--
-This file is part of the 19blog project.
-19blog is a simple blog site system.
-Copyright (C) 2020  The 19blog Authors.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
--->
 <!DOCTYPE html>
 <html lang='en'>
 <head>
@@ -100,6 +82,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 	</style>
 	<script>
         let changed = false
+		let submited = false
 
         function onChange() {
             changed = true
@@ -109,25 +92,40 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
             changed = false
         }
 
-        function onClose() {
-            if (!changed || confirm("The form has not been saved, Are you sure to close?")) {
-                window.close()
-            }
+        function onSubmit() {
+            submited = changed
+            return submited
         }
 
-        function onSubmit() {
-            // if (!changed) {
-            //     alert("The form is not modified, no need to save.")
-            //     return false
-            // }
-            return changed
+        function onClose() {
+            window.close()
         }
 
         function onRemove() {
             if (confirm("Are you sure remove this blog?")) {
-                window.open('remove?id=$id', '_self')
+                location.href = 'remove?id=$id'
             }
         }
+
+        window.onbeforeunload = function (e) {
+            // blur current active element to trig onchange event
+            // and update changed flag immediately
+            const active = document.activeElement
+            active && active.blur()
+
+            if (!submited && changed) {
+                const dialogText = 'The form has not been saved, Are you sure to close?'
+                // Compatible with versions prior to IE8 and Firefox 4
+                e && (e.returnValue = dialogText)
+                // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
+                return dialogText
+            }
+        }
+
+        // if blog saved successed, refresh list
+		if ($refreshList && window.opener) {
+		    window.opener.location.reload()
+		}
 	</script>
 </head>
 <body>

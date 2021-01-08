@@ -136,7 +136,7 @@ function rmBlog() {
     # get first line number by blog id
     RET=$(sed -n "/^<li id='$1'/=" "$file")
     if [ -z "$RET" ]; then
-        resErr "Can not find blog by id($1)."
+        resErr "Can not find blog by id($1) in file($file)."
     fi
     # delete blog lines
     sed -i "$RET,/^<\/li>$/d" "$file"
@@ -171,7 +171,7 @@ function draftSave() {
         # get first line number and tc by blog id
         IFS=$'\n' read -r -d '' ln tc <<<"$(sed -n "/^<li id='$1'/{=; s/.*tc='\([0-9]*\)'.*/\1/p}" "$file")"
         if [ -z "$ln" ]; then
-            resErr "Can not find blog by id($1)."
+            resErr "Can not find blog by id($1) in file($file)."
         fi
         # remake blog html node
         mkBlog "$1" "$2" "$3" "$tc" && blog=$RET
@@ -235,7 +235,7 @@ function getContent() {
     # get first line number by blog id
     ln=$(sed -n "/^<li id='$2'/=" "$1")
     if [ -z "$ln" ]; then
-        resErr "Can not find blog by id($1)."
+        resErr "Can not find blog by id($2) in file($1)."
     fi
     RET="$(sed -n "$ln{ \
     s/^<li id='\([0-9]*\)' tc='\([0-9]*\)' tu='\([0-9]*\)'.*/\1 \2 \3/p; \

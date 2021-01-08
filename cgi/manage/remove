@@ -27,11 +27,16 @@
 
 res200
 
+# tag for refresh blog list or not
+refreshList=false
+
 # show close button when error
 ERRCLOSE=true
 
 # remove blog
 rmBlog "${uparam["id"]}"
+
+refreshList=true
 
 # output template remove.html
 resFile './remove.html'

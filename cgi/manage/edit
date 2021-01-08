@@ -31,17 +31,21 @@
 
 res200
 
+# tag for refresh blog list or not
+refreshList=false
+
+id=${uparam["id"]}
+
 # --save blog from post
 if [ "$REQUEST_METHOD" = 'POST' ]; then
-    if draftSave "${uparam["id"]}" "${uparam["title"]}" "${uparam["content"]}"; then
-        # continue to edit this blog
-        res301 "edit?id=$RET"
+    if draftSave "$id" "${uparam["title"]}" "${uparam["content"]}"; then
+        # continue to edit and refresh list
+        refreshList=true
     else
         resErr "Save failed"
     fi
 fi
 
-id=${uparam["id"]}
 if [ -n "$id" ]; then
     # show close button when error
     ERRCLOSE=true
