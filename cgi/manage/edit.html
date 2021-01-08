@@ -15,6 +15,7 @@
 
         body {
             height: 100%;
+            background-color: #edf6ef;
         }
 
         form {
@@ -24,7 +25,6 @@
         }
 
         .block {
-            background-color: ghostwhite;
             border: bisque dashed 1px;
             padding: 9px 15px;
             display: flex;
@@ -43,11 +43,18 @@
         }
 
         .text {
+			background: transparent;
             flex: 1;
             font-size: 14pt;
-            line-height: 1.5;
+            line-height: 1.6;
             padding: 9px;
+			border: #cfead3 solid 2px;
+			outline: none;
         }
+		.text:focus {
+            background: #C7EDCC;
+            border: #59c9dc solid 2px;
+		}
 
         input.text {
             font-weight: bold;
@@ -65,7 +72,7 @@
         }
 
         .toolbar {
-            background-color: #cecef8;
+            background-color: #e2f3e4;
             text-align: center;
             padding: 9px;
         }
@@ -82,7 +89,7 @@
 	</style>
 	<script>
         let changed = false
-		let submited = false
+        let submited = false
 
         function onChange() {
             changed = true
@@ -123,9 +130,9 @@
         }
 
         // if blog saved successed, refresh list
-		if ($refreshList && window.opener) {
-		    window.opener.location.reload()
-		}
+        if ($refreshList && window.opener) {
+            window.opener.location.reload()
+        }
 	</script>
 </head>
 <body>
@@ -141,7 +148,9 @@
 	</div>
 	<div class='block content'>
 		<span class='label'>Content:</span>
-		<textarea class='text' name='content' required>$content</textarea>
+		<!--Add starting newline to the default value of the textarea can avoid garbled-->
+		<textarea class='text' name='content' required>
+$content</textarea>
 	</div>
 	<div class='toolbar'>
 		<input class='button' type='submit' value='Save'>
