@@ -81,11 +81,16 @@ function resFile() {
     if [ -z "$1" ]; then
         resErr 'File is empty when response a html template file.'
     fi
+
     # More difficult here
-    # Use single quotes to avoid bash string escaping
-    # NOTE: the sed regular expression escaping
-    html=$(sed 's/\(\\\)\([^$]\)/\1\1\2/g; s/"/\\"/g; s/`/\\`/g;' "$1")
-    resBody "$(eval echo -n "\"$html\"")"
+    # NOTE: 1.enclose sed parameter in single quotes to avoid bash string escaping
+    #       2.the sed regular expression escaping
+    #       3.it is very important to enclose the sed return value in double quotes
+    #         It can avoid irregular individual garbled characters in multibyte strings
+    html="$(sed 's/\(\\\)\([^$]\)/\1\1\2/g; s/"/\\"/g; s/`/\\`/g;' "$1")"
+    # NOTE: 1.Escaping the eval command for the first time: the second parameter is expanded
+    #       2.Escaping the resBody command for the second time: the first expanded parameter will be expanded again
+    eval resBody "\"$html\""
 }
 # response error and terminate
 #   $ERRCLOSE == true render close button on error screen
