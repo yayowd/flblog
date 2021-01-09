@@ -5,6 +5,10 @@
 * Add home page for blog site
 * Can register a new user
 
+#### 01/08/2021
+* Auto refresh blog list when add/edit/remove blog
+* Add warm tips in edit page if close without saved
+
 #### 01/07/2021
 * Adjust the ui of the management page
 
