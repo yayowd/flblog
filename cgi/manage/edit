@@ -34,6 +34,9 @@ res200
 # tag for refresh blog list or not
 refreshList=false
 
+# var for html
+date=$(date "+%H:%M %m/%d/%Y")
+
 id=${uparam["id"]}
 
 # --save blog from post
