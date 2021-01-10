@@ -145,6 +145,17 @@
             }
         }
 
+        // hold ctrl + s to save blog
+        document.onkeydown = function (e) {
+            if (e.ctrlKey && e.key === "s") {
+                e.preventDefault()
+
+                const save = document.getElementById('save')
+                save.focus()
+                save.click()
+            }
+        }
+
         // if blog saved successed, refresh list
         if ($refreshList && window.opener) {
             window.opener.location.reload()
@@ -166,7 +177,7 @@
 			<textarea class='text' name='content' placeholder='Content' required>$content</textarea>
 		</div>
 		<div class='toolbar'>
-			<input class='button' type='submit' value='Save'>
+			<input id='save' class='button' type='submit' value='Save'>
 			<input class='button' type='button' value='Close' onclick='onClose()'>
 			<input class='button' type='reset' value='Reset'>
 			$rmbtn
