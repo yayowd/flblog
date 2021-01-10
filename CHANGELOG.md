@@ -5,6 +5,14 @@
 * Add home page for blog site
 * Can register a new user
 
+#### 01/10/2021
+* Add the save shortcut key ctrl+s on the edit page
+* Show blog content in columns on draft page
+
+#### 01/09/2021
+* Solve the problem of individual garbled characters in html template multi-byte strings
+* Improve blog editing experience
+
 #### 01/08/2021
 * Auto refresh blog list when add/edit/remove blog
 * Add warm tips in edit page if close without saved
