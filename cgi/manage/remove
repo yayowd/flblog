@@ -17,9 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# The main page for user admin.
-# Provide the following operations:
-#   1. Add blog;
+# blog remove
 
 . ../util/http
 . ../util/fcgi
