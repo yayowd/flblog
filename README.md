@@ -418,9 +418,10 @@ NOTE: Nginx need fcgiwrap to support cgi.
   >$ sudo ln -s <git_working_diretory> ~/srv/19blog
   >```
 <pre>
-NOTE: When you clone the respository, there has one test account
+NOTE: When you clone the respository, there has two test account
       in web basic authorization file(19blog/cgi/manage/.passwd),
-      the name is admin, passwd is 123.
+      for admin:  19blog/cgi/admin/.passwd  -> name is admin, passwd is 123
+      for manage: 19blog/cgi/manage/.passwd -> name is yy,    passwd is 123
       you can also add your dev account into .passwd.
 </pre>
 
