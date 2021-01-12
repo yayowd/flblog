@@ -146,6 +146,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ sudo mkdir -p /srv/19blog/home
 >$ sudo mkdir -p /srv/19blog/blogs
 >$ sudo mkdir -p /srv/19blog/cgi/api
+>$ sudo mkdir -p /srv/19blog/cgi/admin
 >$ sudo mkdir -p /srv/19blog/cgi/manage
 >$ sudo chown -R http:http /srv/19blog
 >$
@@ -153,6 +154,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ sudo mkdir -p /srv/19blog/home
 >$ sudo mkdir -p /srv/19blog/blogs
 >$ sudo mkdir -p /srv/19blog/cgi/api
+>$ sudo mkdir -p /srv/19blog/cgi/admin
 >$ sudo mkdir -p /srv/19blog/cgi/manage
 >$ sudo chown -R nginx:nginx /srv/19blog
 >$ sudo chcon -Ru system_u /srv/19blog
@@ -165,6 +167,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ mkdir -p ~/srv/19blog/home
 >$ mkdir -p ~/srv/19blog/blogs
 >$ mkdir -p ~/srv/19blog/cgi/api
+>$ mkdir -p ~/srv/19blog/cgi/admin
 >$ mkdir -p ~/srv/19blog/cgi/manage
 >```
 - web basic authorization
@@ -172,23 +175,29 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ # --archlinux
 >$ # install tools first
 >$ sudo pacman -S apache
->$ # create admin account
+>$ # create account
+>$ sudo -u http  touch /srv/19blog/cgi/admin/.passwd
 >$ sudo -u http  touch /srv/19blog/cgi/manage/.passwd
+>$ sudo -u http  htpasswd -b /srv/19blog/cgi/admin/.passwd <name> <passwd>
 >$ sudo -u http  htpasswd -b /srv/19blog/cgi/manage/.passwd <name> <passwd>
 >$
 >$ # --centos
 >$ # install tools first
 >$ sudo yum install httpd-tools
->$ # create admin account
+>$ # create account
+>$ sudo -u nginx touch /srv/19blog/cgi/admin/.passwd
 >$ sudo -u nginx touch /srv/19blog/cgi/manage/.passwd
+>$ sudo -u nginx htpasswd -b /srv/19blog/cgi/admin/.passwd <name> <passwd>
 >$ sudo -u nginx htpasswd -b /srv/19blog/cgi/manage/.passwd <name> <passwd>
 >$
 >$ # --macos
->$ # create admin account
+>$ # create account
+>$ touch ~/srv/19blog/cgi/admin/.passwd
 >$ touch ~/srv/19blog/cgi/manage/.passwd
+>$ htpasswd -b ~/srv/19blog/cgi/admin/.passwd <name> <passwd>
 >$ htpasswd -b ~/srv/19blog/cgi/manage/.passwd <name> <passwd>
 >$
->$ # NOTE: ONLY manager cgi need authorized.
+>$ # NOTE: ONLY admin and manage cgi need authorized.
 >```
 - make demo files
 >```shell
@@ -206,6 +215,14 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
 >echo "<h2>API test success</h2>bash version($BASH_VERSION)<br/>run as usr($(whoami))<br/><br/>$(date)"
 >EOF
+>$ read -d '' admin <<-'EOF'
+>#!/usr/bin/env bash
+>echo "HTTP/1.1 200 OK"
+>echo "Content-Type: text/html; charset=UTF-8"
+>echo
+>echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
+>echo "<h2>Admin test success</h2>bash version($BASH_VERSION)<br/>run as usr($(whoami))<br/><br/>$(date)"
+>EOF
 >$ read -d '' manage <<-'EOF'
 >#!/usr/bin/env bash
 >echo "HTTP/1.1 200 OK"
@@ -219,6 +236,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ sudo -u http tee /srv/19blog/home/index.html <<< "$home"
 >$ sudo -u http tee /srv/19blog/blogs/test.html <<< "$blogs"
 >$ sudo -u http tee /srv/19blog/cgi/api/test <<< "$api"
+>$ sudo -u http tee /srv/19blog/cgi/admin/test <<< "$admin"
 >$ sudo -u http tee /srv/19blog/cgi/manage/test <<< "$manage"
 >$ sudo chmod +x /srv/19blog/cgi/api/test
 >$ sudo chmod +x /srv/19blog/cgi/manage/test
@@ -227,6 +245,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ sudo -u nginx tee /srv/19blog/home/index.html <<< "$home"
 >$ sudo -u nginx tee /srv/19blog/blogs/test.html <<< "$blogs"
 >$ sudo -u nginx tee /srv/19blog/cgi/api/test <<< "$api"
+>$ sudo -u nginx tee /srv/19blog/cgi/admin/test <<< "$admin"
 >$ sudo -u nginx tee /srv/19blog/cgi/manage/test <<< "$manage"
 >$ sudo chmod +x /srv/19blog/cgi/api/test
 >$ sudo chmod +x /srv/19blog/cgi/manage/test
@@ -235,6 +254,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ tee ~/srv/19blog/home/index.html <<< "$home"
 >$ tee ~/srv/19blog/blogs/test.html <<< "$blogs"
 >$ tee ~/srv/19blog/cgi/api/test <<< "$api"
+>$ tee ~/srv/19blog/cgi/admin/test <<< "$admin"
 >$ tee ~/srv/19blog/cgi/manage/test <<< "$manage"
 >$ chmod +x ~/srv/19blog/cgi/api/test
 >$ chmod +x ~/srv/19blog/cgi/manage/test
@@ -282,6 +302,23 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >    }
 >    location ~ /api/ {
 >        root                    $cgi_root;
+>        # buffer settings
+>        gzip                    off;
+>        client_max_body_size    0;
+>        fastcgi_buffer_size     32k;
+>        fastcgi_buffers         32 32k;
+>        # fastcgi settings
+>        include                 fastcgi.conf;
+>        fastcgi_param           REMOTE_USER \$remote_user;
+>        fastcgi_param           PATH_INFO \$1;
+>        fastcgi_pass            unix:$socket_path;
+>    }
+>    rewrite ^/admin$ /admin/index permanent;
+>    location ~ /admin/ {
+>        root                    $cgi_root;
+>        # basic authorization
+>        auth_basic              "19blog login";
+>        auth_basic_user_file    $cgi_root/admin/.passwd;
 >        # buffer settings
 >        gzip                    off;
 >        client_max_body_size    0;
@@ -341,7 +378,9 @@ NOTE: Nginx need fcgiwrap to support cgi.
 > http://your.domain/               -> Welcom to 19blog
 > http://your.domain/test           -> Test's blog
 > http://your.domain/api/test       -> API test success
-> http://your.domain/manage/test    -> Ask login: enter the name and passwd set above
+> http://your.domain/admin/test     -> Ask login: enter the administartor name and passwd set above
+>                                   -> Admin test success
+> http://your.domain/manage/test    -> Ask login: enter the manager name and passwd set above
 >                                   -> Manage test success
 >
 >$ # NOTE: If you see the welcome page of nginx, 
@@ -389,6 +428,7 @@ NOTE: When you clone the respository, there has one test account
 │   └── config     status and statistics
 ├── cgi          shell files for fastcgi
 │   ├── api        api for webapps
+│   ├── admin      administrator pages
 │   └── manage     manager pages
 └── home         distribution directory of webapp
 ```
