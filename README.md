@@ -239,6 +239,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ sudo -u http tee /srv/19blog/cgi/admin/test <<< "$admin"
 >$ sudo -u http tee /srv/19blog/cgi/manage/test <<< "$manage"
 >$ sudo chmod +x /srv/19blog/cgi/api/test
+>$ sudo chmod +x /srv/19blog/cgi/admin/test
 >$ sudo chmod +x /srv/19blog/cgi/manage/test
 >$
 >$ # --centos
@@ -248,6 +249,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ sudo -u nginx tee /srv/19blog/cgi/admin/test <<< "$admin"
 >$ sudo -u nginx tee /srv/19blog/cgi/manage/test <<< "$manage"
 >$ sudo chmod +x /srv/19blog/cgi/api/test
+>$ sudo chmod +x /srv/19blog/cgi/admin/test
 >$ sudo chmod +x /srv/19blog/cgi/manage/test
 >$
 >$ # --macos
@@ -257,6 +259,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ tee ~/srv/19blog/cgi/admin/test <<< "$admin"
 >$ tee ~/srv/19blog/cgi/manage/test <<< "$manage"
 >$ chmod +x ~/srv/19blog/cgi/api/test
+>$ chmod +x ~/srv/19blog/cgi/admin/test
 >$ chmod +x ~/srv/19blog/cgi/manage/test
 >```
 - config nginx
