@@ -1,0 +1,226 @@
+#!/usr/bin/env bash
+
+# This file is part of the 19blog project.
+# 19blog is a simple blog site system.
+# Copyright (C) 2020  The 19blog Authors.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# blog functions
+# Dependent files:
+#       ./http
+#       ./common
+# NOTE: should be sourced once at any cgi interface
+# NOTE: all of functions must called in main shell,
+#       and the result is $RET.
+#       because error check in function,
+#       and terminate response directly when error ocurse.
+
+# --get current user's draft file
+#   result is draft file path
+function draftFile() {
+    curUser && user=$RET
+    curFile "$blogsdir/${user}_draft.html" "$templdir/draft.html"
+}
+
+# --get next blog id for current user
+#   $1  true: update user blog max id into $totalfile
+function nextId() {
+    curUser && user=$RET
+    RET=$(sed -n "s/^$user \([0-9]*\).*/\1/p" "$totalfile")
+    if [ -n "$RET" ]; then
+        RET=$(($RET + 1))
+        [ "$1" = true ] && sed -i "/^$user /c $user $RET" "$totalfile"
+    else
+        RET=1
+        [ "$1" = true ] && sed -i "\$a$user $RET" "$totalfile"
+    fi
+    return 0 # this statement must be included to ensure filling of the return value $RET
+}
+
+# --create a new blog node for draft file
+#   the title and content will be auto encode
+#   $1      id
+#   $2      title
+#   $3      content
+#   $4      create time(tc) for remake blog
+function mkBlog() {
+    if [ -z "$1" ]; then
+        resErr 'Blog id can not be empty.'
+    fi
+    if [ -z "$2" ]; then
+        resErr 'Blog title can not be empty.'
+    fi
+    if [ -z "$3" ]; then
+        resErr 'Blog content can not be empty.'
+    fi
+    curUser && user=$RET
+    ndate=$(date +%s)
+    sdate=$(date "+%H:%M:%S %m/%d/%Y")
+    htmlEncode "$2" && title=$RET
+    htmlEncode "$3" && content=$RET
+    IFS= read -r -d '' RET <<EOF
+<li id='$1' tc='${4:-$ndate}' tu='$ndate'>
+<p>$title</p>
+<p>$user $sdate</p>
+<pre>
+$content</pre>
+<ul>
+<!--new-reply-->
+</ul>
+</li>
+EOF
+    return 0 # this statement must be included to ensure filling of the return value $RET
+}
+
+# --remove blog in draft
+#   $1      blog id
+#   $RET is blog first line number
+function rmBlog() {
+    if [ -z "$1" ]; then
+        resErr 'Blog id can not be empty.'
+    fi
+    # remove blog in draft file
+    draftFile && file=$RET
+    # get first line number by blog id
+    RET=$(sed -n "/^<li id='$1'/=" "$file")
+    if [ -z "$RET" ]; then
+        resErr "Can not find blog by id($1) in file($file)."
+    fi
+    # delete blog lines
+    sed -i "$RET,/^<\/li>$/d" "$file"
+}
+
+# --save blog to draft
+#   $1      blog id
+#     == NULL   save as new blog
+#     != NULL   edit blog by id
+#   $2      title
+#   $3      content
+#   $RET is blog id
+function draftSave() {
+    # save blog to draft file
+    draftFile && file=$RET
+    # new blog
+    if [ -z "$1" ]; then
+        # get id for new blog
+        nextId && id=$RET
+        # make blog html node
+        mkBlog "$id" "$2" "$3" && blog=$RET
+        # insert new blog text into draft file
+        if sed -i "/^<!--new-draft-->/r"<(echo -n "$blog") "$file"; then
+            # generate next id for current user when success
+            nextId true
+            RET=$id
+            return 0
+        else
+            return 1
+        fi
+    else # edit blog
+        # get first line number and tc by blog id
+        IFS=$'\n' read -r -d '' ln tc <<<"$(sed -n "/^<li id='$1'/{=; s/.*tc='\([0-9]*\)'.*/\1/p}" "$file")"
+        if [ -z "$ln" ]; then
+            resErr "Can not find blog by id($1) in file($file)."
+        fi
+        # remake blog html node
+        mkBlog "$1" "$2" "$3" "$tc" && blog=$RET
+        # remove old blog
+        rmBlog "$1" && ln=$(($RET-1))
+        # insert new blog at the original location
+        if sed -i "${ln}r"<(echo -n "$blog") "$file"; then
+            RET=$1
+            return 0
+        else
+            return 1
+        fi
+    fi
+}
+
+# --get blog list
+#   $1      which file: draft or blog
+function getList() {
+    if [ -z "$1" ]; then
+        resErr 'File is empty when get blog list.'
+    fi
+    RET="$(sed -n "/^<li id='/{ \
+    s/^<li id='\([0-9]*\)' tc='\([0-9]*\)' tu='\([0-9]*\)'.*/\1 \2 \3/p; \
+    n; s/^<p>\(.*\)<\/p>/\1/p; \
+    n; s/^<p>\(.*\)<\/p>/\1/p \
+    }" "$1")"
+}
+
+# --make html for draft list
+function draftList() {
+    draftFile && file=$RET
+    getList "$file" && list=$RET
+    RET=''
+    while
+        IFS=' ' read -r id tc tu
+        [ -n "$id" ]
+    do
+        IFS= read -r title
+        IFS=' ' read -r user time date
+        IFS= read -r -d '' line <<EOF
+<li>
+<span>$id</span>
+<span>$time $date</span>
+<a href='#' onclick='window.open("edit?id=$id")'>$title</a>
+</li>
+EOF
+        RET=$RET$line
+    done <<<"$list"
+}
+
+# --get blog content
+#   $1      which file: draft or blog
+#   $2      blog id
+function getContent() {
+    if [ -z "$1" ]; then
+        resErr 'File is empty when get blog content.'
+    fi
+    if [ -z "$2" ]; then
+        resErr 'Blog id is empty when get blog content.'
+    fi
+    # get first line number by blog id
+    ln=$(sed -n "/^<li id='$2'/=" "$1")
+    if [ -z "$ln" ]; then
+        resErr "Can not find blog by id($2) in file($1)."
+    fi
+    RET="$(sed -n "$ln{ \
+    s/^<li id='\([0-9]*\)' tc='\([0-9]*\)' tu='\([0-9]*\)'.*/\1 \2 \3/p; \
+    n; s/^<p>\(.*\)<\/p>/\1/p; \
+    n; s/^<p>\(.*\)<\/p>/\1/p; \
+    n; \
+    :jc n; \
+    /<\/pre>$/b jt; \
+    p; b jc; \
+    :jt s/^\(.*\)<\/pre>$/\1/p; \
+    }" "$1")"$'\r' # Add end mark to avoid ending newline when reading
+}
+
+# --get blog content for edit in draft
+#   $1      blog id
+#   multiple return values
+function draftBlog() {
+    draftFile && file=$RET
+    getContent "$file" "$1" && blog=$RET
+    if
+        IFS=' ' read -r id tc tu
+        [ -n "$id" ]
+    then
+        IFS= read -r title
+        IFS=' ' read -r user time date
+        IFS= read -r -d $'\r' content
+    fi <<<"$blog"
+}

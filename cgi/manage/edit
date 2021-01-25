@@ -28,6 +28,7 @@
 . ../util/http
 . ../util/fcgi
 . ../util/common
+. ../util/blog
 
 res200
 

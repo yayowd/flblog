@@ -102,8 +102,12 @@
         }
 	</style>
 	<script>
+        // form content has changed or not
         let changed = false
+        // is form submit or not
         let submited = false
+        // is blog removed or not
+        let removed = false
 
         function onChange() {
             changed = true
@@ -124,6 +128,7 @@
 
         function onRemove() {
             if (confirm('Are you sure remove this blog?')) {
+                removed = true
                 location.href = 'remove?id=$id'
             }
         }
@@ -134,7 +139,7 @@
             const active = document.activeElement
             active && active.blur()
 
-            if (!submited && changed) {
+            if (!submited && !removed && changed) {
                 const dialogText = 'The form has not been saved, Are you sure to close?'
                 // Compatible with versions prior to IE8 and Firefox 4
                 e && (e.returnValue = dialogText)
@@ -151,6 +156,8 @@
                 const save = document.getElementById('save')
                 save.focus()
                 save.click()
+            } else if (e.code === 'Escape') {
+                onClose()
             }
         }
 

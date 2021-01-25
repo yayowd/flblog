@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# http common functions
+# http functions
 # Dependent files:
 #       no dependent
 # NOTE: should be sourced once at any cgi interface
