@@ -1,0 +1,181 @@
+#!/usr/bin/env bash
+
+# This file is part of the 19blog project.
+# 19blog is a simple blog site system.
+# Copyright (C) 2020  The 19blog Authors.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# block functions for system administration
+# Dependent files:
+#       ./http
+#       ./common
+# NOTE: should be sourced once at any cgi interface
+# NOTE: all of functions must called in main shell,
+#       and the result is $RET.
+#       because error check in function,
+#       and terminate response directly when error ocurse.
+
+# --get system home file
+#   result is home file path
+function homeFile() {
+    curFile "$homedir/index.html" "$templdir/home.html"
+}
+
+# --create a new block node
+#   the content will be auto encode
+#   $1      id
+#   $2      content
+#   $3      create time(tc) for remake block
+function mkBlock() {
+    if [ -z "$1" ]; then
+        resErr 'Block id can not be empty.'
+    fi
+    if [ -z "$2" ]; then
+        resErr 'Block content can not be empty.'
+    fi
+    curUser && user=$RET
+    ndate=$(date +%s)
+    sdate=$(date "+%H:%M:%S %m/%d/%Y")
+    htmlEncode "$2" && content=$RET
+    IFS= read -r -d '' RET <<EOF
+<li id='$1' tc='${3:-$ndate}' tu='$ndate' user='$user' date='$sdate'>
+<pre>
+$content</pre>
+</li>
+EOF
+    return 0 # this statement must be included to ensure filling of the return value $RET
+}
+
+# --find block in home
+#   $1      block id
+#   $RET is block first line number
+function findBlock() {
+    if [ -z "$1" ]; then
+        resErr 'Block id can not be empty.'
+    fi
+    # find block in home file
+    homeFile && file=$RET
+    # get first line number by block id
+    RET=$(sed -n "/^<li id='$1'/=" "$file")
+}
+
+# --remove block in home
+#   $1      block id
+#   $RET is block first line number
+function rmBlock() {
+    # remove block in home file
+    homeFile && file=$RET
+    findBlock "$1"
+    if [ -z "$RET" ]; then
+        resErr "Can not find block by id($1) in file($file)."
+    fi
+    # delete block lines
+    sed -i "$RET,/^<\/li>$/d" "$file"
+}
+
+# --save block to home
+#   $1      id
+#   $2      content
+#   $3      isEdit
+#   $RET is block id
+function saveBlock() {
+    findBlock "$1" && line=$RET
+    # save block to home file
+    homeFile && file=$RET
+    # new block
+    if [ -z "$line" ]; then
+        # make block html node
+        mkBlock "$1" "$2" && block=$RET
+        # insert new block text into home file
+        if sed -i "/^<!--new-block-->/r"<(echo -n "$block") "$file"; then
+            RET=$1
+            return 0
+        else
+            return 1
+        fi
+    else # edit block
+        # error when add new block with an exsit id
+        if [ "$3" != "true" ]; then
+            resErr "The id($1) is exsit in file($file)"
+        fi
+        # get first line number and tc by block id
+        IFS=$'\n' read -r -d '' ln tc <<<"$(sed -n "/^<li id='$1'/{=; s/.*tc='\([0-9]*\)'.*/\1/p}" "$file")"
+        if [ -z "$ln" ]; then
+            resErr "Can not find block by id($1) in file($file)."
+        fi
+        # remake block html node
+        mkBlock "$1" "$2" "$tc" && block=$RET
+        # remove old block
+        rmBlock "$1" && ln=$(($RET - 1))
+        # insert new block at the original location
+        if sed -i "${ln}r"<(echo -n "$block") "$file"; then
+            RET=$1
+            return 0
+        else
+            return 1
+        fi
+    fi
+}
+
+# --make html for block list from home file
+function blockList() {
+    homeFile && file=$RET
+    list="$(sed -n "/^<li id='/{ \
+    s/^<li id='\(.*\)' tc='\([0-9]*\)' tu='\([0-9]*\)' user='\(.*\)' date='\(.*\)'.*/\1 \2 \3 \4 \5/p; \
+    }" "$file")"
+    RET=''
+    while
+        IFS=' ' read -r id tc tu user time date
+        [ -n "$id" ]
+    do
+        IFS= read -r -d '' line <<EOF
+<li>
+<span>$user</span>
+<span>$time $date</span>
+<a href='#' onclick='window.open("edit?id=$id")'>$id</a>
+</li>
+EOF
+        RET=$RET$line
+    done <<<"$list"
+}
+
+# --get block content for edit in home
+#   $1      block id
+#   multiple return values
+function blockInfo() {
+    homeFile && file=$RET
+    if [ -z "$1" ]; then
+        resErr 'Block id is empty when get block content.'
+    fi
+    # get first line number by block id
+    ln=$(sed -n "/^<li id='$1'/=" "$file")
+    if [ -z "$ln" ]; then
+        resErr "Can not find block by id($1) in file($file)."
+    fi
+    block="$(sed -n "$ln{ \
+    s/^<li id='\(.*\)' tc='\([0-9]*\)' tu='\([0-9]*\)' user='\(.*\)' date='\(.*\)'.*/\1 \2 \3 \4 \5/p; \
+    n; \
+    :jc n; \
+    /<\/pre>$/b jt; \
+    p; b jc; \
+    :jt s/^\(.*\)<\/pre>$/\1/p; \
+    }" "$file")"$'\r' # Add end mark to avoid ending newline when reading
+    if
+        IFS=' ' read -r id tc tu user time date
+        [ -n "$id" ]
+    then
+        IFS= read -r -d $'\r' content
+    fi <<<"$block"
+}

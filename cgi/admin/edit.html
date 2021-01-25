@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+	<meta charset='UTF-8'>
+	<title>Edit Block</title>
+	<style type='text/css'>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #C7EDCC;
+        }
+
+        .container {
+            height: 100%;
+            width: 100%;
+            max-width: 919px;
+            background: #ebffec;
+        }
+
+        form {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .block {
+            padding: 9px 15px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .author {
+            color: dimgray;
+            margin-right: 9px;
+        }
+
+        .text {
+            background: transparent;
+            flex: 1;
+            font-size: 14pt;
+            line-height: 1.6;
+            padding: 9px;
+            border: #e3f1e6 solid 1px;
+            outline: none;
+        }
+
+        .text:focus {
+            background: #f5fff5;
+            /*background-color: #fff;*/
+            background-image: /*linear-gradient(90deg, transparent 79px, #abced4 79px, #abced4 81px, transparent 81px),*/ linear-gradient(#eee .01em, transparent .09em);
+            background-size: 100% 1.5em;
+            border: #59c9dc solid 2px;
+        }
+
+        input.text {
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+
+        textarea.text {
+            align-self: stretch;
+            margin: 9px 0;
+            letter-spacing: 2px;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        .toolbar {
+            border-top: #e2f3e4 dashed 1px;
+            text-align: center;
+            padding: 9px;
+        }
+
+        .button {
+            width: 99px;
+            height: 33px;
+            background-color: white;
+            border: #59c9dc dotted 1px;
+            outline: none;
+        }
+
+        .button:active {
+            outline: #59c9dc solid 2px;
+        }
+
+        .remove {
+            color: red;
+        }
+	</style>
+	<script>
+		// form content has changed or not
+        let changed = false
+		// is form submit or not
+        let submited = false
+		// is block removed or not
+        let removed = false
+
+        function onChange() {
+            changed = true
+        }
+
+        function onReset() {
+            changed = false
+        }
+
+        function onSubmit() {
+            submited = changed
+            return submited
+        }
+
+        function onClose() {
+            window.close()
+        }
+
+        function onRemove() {
+            if (confirm('Are you sure remove this block?')) {
+                removed = true
+                location.href = 'remove?class=$class'
+            }
+        }
+
+        window.onbeforeunload = function (e) {
+            // blur current active element to trig onchange event
+            // and update changed flag immediately
+            const active = document.activeElement
+            active && active.blur()
+
+            if (!submited && !removed && changed) {
+                const dialogText = 'The form has not been saved, Are you sure to close?'
+                // Compatible with versions prior to IE8 and Firefox 4
+                e && (e.returnValue = dialogText)
+                // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
+                return dialogText
+            }
+        }
+
+        // hold ctrl + s to save block
+        document.onkeydown = function (e) {
+            if (e.ctrlKey && e.key === "s") {
+                e.preventDefault()
+
+                const save = document.getElementById('save')
+                save.focus()
+                save.click()
+            } else if (e.code === 'Escape') {
+                onClose()
+			}
+        }
+
+        // if block saved successed, refresh list
+        if ($refreshList && window.opener) {
+            window.opener.location.reload()
+        }
+	</script>
+</head>
+<body>
+<div class='container'>
+	<form method='post' enctype='multipart/form-data' onchange='onChange()' onreset='onReset()' onsubmit='return onSubmit()'>
+		<input type='hidden' name='isEdit' value='$isEdit'>
+		<div class='block'>
+			<span class='author'>$REMOTE_USER</span>
+			<span class='author'>$time $date</span>
+		</div>
+		<div class='block'>
+			<input class='text' type='text' name='id' placeholder='Id' value='$id' $readonly required>
+		</div>
+		<div class='block content'>
+			<textarea class='text' name='content' placeholder='Content' required>$content</textarea>
+		</div>
+		<div class='toolbar'>
+			<input id='save' class='button' type='submit' value='Save'>
+			<input class='button' type='button' value='Close' onclick='onClose()'>
+			<input class='button' type='reset' value='Reset'>
+			$rmbtn
+		</div>
+	</form>
+</div>
+</body>
+</html>

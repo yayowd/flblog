@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 	<meta charset='UTF-8'>
-	<title>Manage My Blog</title>
+	<title>System Administration</title>
 	<style type='text/css'>
         * {
             padding: 0;
@@ -55,7 +55,6 @@
 
         .list span:nth-child(1) {
             flex-shrink: 0;
-            width: 19px;
             text-align: right;
             margin-right: 9px;
         }
@@ -71,9 +70,9 @@
 	</style>
 </head>
 <body>
-<div class='header'><a href='/${REMOTE_USER}_draft' target='_blank'>${REMOTE_USER}'s draft</a></div>
+<div class='header'><a href='/' target='_blank'>System Home Page</a></div>
 <div class='toolbar'>
-	<a href='#' onclick='window.open("edit")'>Add blog</a>
+	<a href='#' onclick='window.open("edit")'>Add block</a>
 </div>
 <div class='list'>
 	<ul>$list</ul>

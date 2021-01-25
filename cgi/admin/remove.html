@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+	<meta charset='UTF-8'>
+	<title>Remove block</title>
+	<style type='text/css'>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+	</style>
+	<script>
+        // if block removed successed, refresh list
+        if ($refreshList && window.opener) {
+            window.opener.location.reload()
+        }
+        window.close()
+	</script>
+</head>
+<body>
+<h3>The block has been removed!</h3>
+<h5><a href='#' onclick='window.close()'>CLOSE</a></h5>
+</body>
+</html>
