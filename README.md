@@ -419,7 +419,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
   >```
 <pre>
 NOTE: When you clone the respository, there has two test account
-      in web basic authorization file(19blog/cgi/manage/.passwd),
+      in web basic authorization file(.passwd),
       for admin:  19blog/cgi/admin/.passwd  -> name is admin, passwd is 123
       for manage: 19blog/cgi/manage/.passwd -> name is yy,    passwd is 123
       you can also add your dev account into .passwd.
@@ -428,13 +428,17 @@ NOTE: When you clone the respository, there has two test account
 #### DIRECTORY LIST
 ```
 ├── app          webapp source code
+│   ├── home       vue home webapp
+│   └── blog       vue blog webapp
 ├── blogs        runtime directory, save all user data
 │   └── config     status and statistics
 ├── cgi          shell files for fastcgi
-│   ├── api        api for webapps
 │   ├── admin      administrator pages
-│   └── manage     manager pages
-└── home         distribution directory of webapp
+│   ├── api        api for webapps
+│   ├── manage     manager pages
+│   ├── templ      template pages
+│   └── util       utility function library
+└── home         distribution directory of home webapp
 ```
 
 ## DEMO
