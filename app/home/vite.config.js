@@ -12,6 +12,7 @@ export default {
             entry: resolve(__dirname, 'src/main.js'),
             name: 'HomeLib',
         },
+        cssCodeSplit: false,
         rollupOptions: {
             external: ['vue'],
             output: {
@@ -21,6 +22,7 @@ export default {
                 paths: {
                     vue: 'https://cdn.jsdelivr.net/npm/vue@3.0.5/dist/vue.esm-browser.prod.js',
                 },
+                assetFileNames: '19blog-home[extname]',
             },
         },
     },

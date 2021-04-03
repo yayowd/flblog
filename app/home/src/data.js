@@ -1,7 +1,5 @@
 import * as R from 'ramda'
 
-const data = {}
-
 function getAttr(el, name) {
     return el.getAttribute(name)
 }
@@ -16,7 +14,7 @@ function getText(el) {
 function getData(id) {
     const el = document.getElementById(id)
     if (!R.isNil(el)) {
-        data[id] = {
+        return {
             tc: getAttr(el, 'tc'),
             tu: getAttr(el, 'tu'),
             user: getAttr(el, 'user'),
@@ -26,9 +24,4 @@ function getData(id) {
     }
 }
 
-getData('name')
-getData('title')
-getData('yy')
-getData('blog')
-
-export default data
+export default getData
