@@ -21,27 +21,61 @@ onInt() {
 }
 trap onInt INT
 
-tip "Setup 19blog on archlinux..."
+tip "Setup 19blog on macos..."
+
+tip "Install brew, please visit https://brew.sh/"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 tip "Checking for bash version.."
 if [[ ${BASH_VERSION:0:1} -lt 4 ]]; then
-    subtip "The bash version ($BASH_VERSION) is not 4.0+"
-    subtip "Try to update bash"
-    sudo pacman --needed --noconfirm -S bash
+    subtip "Install new version of bash"
+    brew install bash
+    subtip "Set new bash as default"
+    bash_newer=$(brew --prefix)/bin/bash
+    echo $bash_newer | sudo tee -a /etc/shells >/dev/null
+    chsh -s $bash_newer
     abort "Open a new terminal window and try again"
 fi
 
 tip "Install web server.."
-sudo pacman --needed --noconfirm -S nginx fcgiwrap
+brew install nginx fcgiwrap
 subtip "Start fastcgiwrap"
-sudo systemctl enable fcgiwrap.socket --now
-subtip "Find unix socket path of fastcgiwrap"
-socket_path=$(sudo systemctl status fcgiwrap.socket | grep Listen:)
-socket_path=${socket_path#*Listen: }
-socket_path=${socket_path% *}
+fcgiwrap_root=$(brew --cellar fcgiwrap)/1.1.0
+fcgiwrap_start=$fcgiwrap_root/start.sh
+socket_path=/usr/local/var/run/fastcgi.sock
+tee $fcgiwrap_start <<-'EOF'
+rm -rf $socket_path
+exec /usr/local/sbin/fcgiwrap -c 1 -f -s unix:$socket_path
+EOF
+chmod +x $fcgiwrap_start
+tee $fcgiwrap_root/homebrew.mxcl.fcgiwrap.plist <<-EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+   <key>Label</key>
+   <string>homebrew.mxcl.fcgiwrap</string>
+   <key>RunAtLoad</key>
+   <true/>
+   <key>KeepAlive</key>
+   <true/>
+   <key>ProgramArguments</key>
+   <array>
+       <string>$fcgiwrap_start</string>
+   </array>
+   <key>WorkingDirectory</key>
+   <string>/usr/local</string>
+   <key>StandardErrorPath</key>
+   <string>/usr/local/var/log/fcgiwrap/error.log</string>
+   <key>StandardOutPath</key>
+   <string>/usr/local/var/log/fcgiwrap/output.log</string>
+ </dict>
+</plist>
+EOF
+brew services start fcgiwrap
 
 tip "Make directories"
-server_root=/srv/19blog
+server_root=~/srv/19blog
 home_root=$server_root/home
 blogs_root=$server_root/blogs
 cgi_root=$server_root/cgi
@@ -50,16 +84,13 @@ sudo mkdir -p ${blogs_root}
 sudo mkdir -p ${cgi_root}/api
 sudo mkdir -p ${cgi_root}/admin
 sudo mkdir -p ${cgi_root}/manage
-sudo chown -R http:http ${server_root}
 
 tip "Web basic authorization"
-subtip "Install web tools"
-sudo pacman --needed --noconfirm -S apache
 subtip "Create account"
-sudo -u http touch ${cgi_root}/admin/.passwd
-sudo -u http touch ${cgi_root}/manage/.passwd
-sudo -u http htpasswd -b ${cgi_root}/admin/.passwd admin 123
-sudo -u http htpasswd -b ${cgi_root}/manage/.passwd yy 123
+touch ${cgi_root}/admin/.passwd
+touch ${cgi_root}/manage/.passwd
+htpasswd -b ${cgi_root}/admin/.passwd admin 123
+htpasswd -b ${cgi_root}/manage/.passwd yy 123
 subtip "test account: for admin  -> name is admin, passwd is 123"
 subtip "test account: for manage -> name is yy,    passwd is 123"
 
@@ -94,17 +125,17 @@ echo
 echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
 echo "<h2>Manage test success</h2>bash version($BASH_VERSION)<br/>run as usr($(whoami))<br/><br/>$(date)"
 EOF
-sudo -u http tee ${home_root}/index.html <<<"$home" >/dev/null
-sudo -u http tee ${blogs_root}/test.html <<<"$blogs" >/dev/null
-sudo -u http tee ${cgi_root}/api/test <<<"$api" >/dev/null
-sudo -u http tee ${cgi_root}/admin/test <<<"$admin" >/dev/null
-sudo -u http tee ${cgi_root}/manage/test <<<"$manage" >/dev/null
-sudo chmod +x ${cgi_root}/api/test
-sudo chmod +x ${cgi_root}/admin/test
-sudo chmod +x ${cgi_root}/manage/test
+tee ${home_root}/index.html <<<"$home" >/dev/null
+tee ${blogs_root}/test.html <<<"$blogs" >/dev/null
+tee ${cgi_root}/api/test <<<"$api" >/dev/null
+tee ${cgi_root}/admin/test <<<"$admin" >/dev/null
+tee ${cgi_root}/manage/test <<<"$manage" >/dev/null
+chmod +x ${cgi_root}/api/test
+chmod +x ${cgi_root}/admin/test
+chmod +x ${cgi_root}/manage/test
 
 tip "Config nginx"
-log_path=/var/log/nginx
+log_path=/usr/local/var/log/nginx
 server_name=domain.you
 read -d '' config <<-EOF
 # for 19blog
@@ -174,13 +205,10 @@ server {
    }
 }
 EOF
-sudo tee /etc/nginx/19blog.conf <<<"$config" >/dev/null
-sudo sed -i '/# for 19blog/,+2d' /etc/nginx/nginx.conf
-sudo sed -i '0,/[[:space:]]\+server {/{//i # for 19blog\ninclude 19blog.conf;\n
-}' /etc/nginx/nginx.conf
+sudo tee /usr/local/etc/nginx/servers/19blog.conf <<< "$config" >/dev/null
 
 tip "Start nginx"
-sudo systemctl enable nginx --now
+brew services start nginx
 
 tip "Testing"
 subtip "http://your.domain/             -> Welcom to 19blog"
@@ -191,6 +219,4 @@ subtip "                                -> Admin test success"
 subtip "http://your.domain/manage/test  -> Ask login: enter the manager name and passwd set above"
 subtip "                                -> Manage test success"
 subtip "NOTE: When error '502 Bad Gateway' occurs, restart fcgiwrap service by:"
-subtip "sudo systemctl stop fcgiwrap.service"
-subtip "sudo systemctl stop fcgiwrap.socket"
-subtip "sudo systemctl start fcgiwrap.socket"
+subtip "brew services restart fcgiwrap"

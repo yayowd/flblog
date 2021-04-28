@@ -4,18 +4,31 @@
 SCRIPT_DIR=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
 
 # Adapt to different operating systems
-source /etc/os-release
-case $ID in
-# Arch Linux
-arch)
+case "$OSTYPE" in
+darwin*)
     # TEST
-    /bin/bash -c "$(cat ${SCRIPT_DIR}/arch.sh)"
-
-#    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/19blog/main/setup/arch.sh)"
+    /bin/bash -c "$(cat ${SCRIPT_DIR}/macos.sh)"
+    #    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/19blog/main/setup/macos.sh)"
     ;;
-# CentOS Linux
-centos)
-    echo Setup 19blog in centos linux...
+linux*)
+    source /etc/os-release
+    case $ID in
+    # Arch Linux
+    arch)
+        # TEST
+        /bin/bash -c "$(cat ${SCRIPT_DIR}/arch.sh)"
+        #    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/19blog/main/setup/arch.sh)"
+        ;;
+    # CentOS Linux
+    centos)
+        # TEST
+        /bin/bash -c "$(cat ${SCRIPT_DIR}/centos.sh)"
+        #    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/19blog/main/setup/centos.sh)"
+        ;;
+    *)
+        echo your os is not support yet.
+        ;;
+    esac
     ;;
 *)
     echo your os is not support yet.

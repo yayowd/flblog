@@ -21,22 +21,25 @@ onInt() {
 }
 trap onInt INT
 
-tip "Setup 19blog on archlinux..."
+tip "Setup 19blog on centos..."
 
 tip "Checking for bash version.."
 if [[ ${BASH_VERSION:0:1} -lt 4 ]]; then
     subtip "The bash version ($BASH_VERSION) is not 4.0+"
     subtip "Try to update bash"
-    sudo pacman --needed --noconfirm -S bash
+    sudo yum install -y bash
     abort "Open a new terminal window and try again"
 fi
 
 tip "Install web server.."
-sudo pacman --needed --noconfirm -S nginx fcgiwrap
+sudo yum install -y nginx
+subtip "Install fcgiwrap from EPEL"
+sudo yum install -y epel-release
+sudo yum --enablerepo=epel install -y fcgiwrap
 subtip "Start fastcgiwrap"
-sudo systemctl enable fcgiwrap.socket --now
+sudo systemctl enable fcgiwrap@nginx.socket --now
 subtip "Find unix socket path of fastcgiwrap"
-socket_path=$(sudo systemctl status fcgiwrap.socket | grep Listen:)
+socket_path=$(sudo systemctl status fcgiwrap@nginx.socket | grep Listen:)
 socket_path=${socket_path#*Listen: }
 socket_path=${socket_path% *}
 
@@ -50,16 +53,18 @@ sudo mkdir -p ${blogs_root}
 sudo mkdir -p ${cgi_root}/api
 sudo mkdir -p ${cgi_root}/admin
 sudo mkdir -p ${cgi_root}/manage
-sudo chown -R http:http ${server_root}
+sudo chown -R nginx:nginx $${cgi_root}
+sudo chcon -Ru system_u $${cgi_root}
+sudo chcon -Rt httpd_sys_content_t $${cgi_root}
 
 tip "Web basic authorization"
 subtip "Install web tools"
-sudo pacman --needed --noconfirm -S apache
+sudo yum install -y httpd-tools
 subtip "Create account"
-sudo -u http touch ${cgi_root}/admin/.passwd
-sudo -u http touch ${cgi_root}/manage/.passwd
-sudo -u http htpasswd -b ${cgi_root}/admin/.passwd admin 123
-sudo -u http htpasswd -b ${cgi_root}/manage/.passwd yy 123
+sudo -u nginx touch ${cgi_root}/admin/.passwd
+sudo -u nginx touch ${cgi_root}/manage/.passwd
+sudo -u nginx htpasswd -b ${cgi_root}/admin/.passwd admin 123
+sudo -u nginx htpasswd -b ${cgi_root}/manage/.passwd yy 123
 subtip "test account: for admin  -> name is admin, passwd is 123"
 subtip "test account: for manage -> name is yy,    passwd is 123"
 
@@ -94,11 +99,11 @@ echo
 echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
 echo "<h2>Manage test success</h2>bash version($BASH_VERSION)<br/>run as usr($(whoami))<br/><br/>$(date)"
 EOF
-sudo -u http tee ${home_root}/index.html <<<"$home" >/dev/null
-sudo -u http tee ${blogs_root}/test.html <<<"$blogs" >/dev/null
-sudo -u http tee ${cgi_root}/api/test <<<"$api" >/dev/null
-sudo -u http tee ${cgi_root}/admin/test <<<"$admin" >/dev/null
-sudo -u http tee ${cgi_root}/manage/test <<<"$manage" >/dev/null
+sudo -u nginx tee ${home_root}/index.html <<< "$home" >/dev/null
+sudo -u nginx tee ${blogs_root}/test.html <<< "$blogs" >/dev/null
+sudo -u nginx tee ${cgi_root}/api/test <<< "$api" >/dev/null
+sudo -u nginx tee ${cgi_root}/admin/test <<< "$admin" >/dev/null
+sudo -u nginx tee ${cgi_root}/manage/test <<< "$manage" >/dev/null
 sudo chmod +x ${cgi_root}/api/test
 sudo chmod +x ${cgi_root}/admin/test
 sudo chmod +x ${cgi_root}/manage/test
@@ -174,10 +179,7 @@ server {
    }
 }
 EOF
-sudo tee /etc/nginx/19blog.conf <<<"$config" >/dev/null
-sudo sed -i '/# for 19blog/,+2d' /etc/nginx/nginx.conf
-sudo sed -i '0,/[[:space:]]\+server {/{//i # for 19blog\ninclude 19blog.conf;\n
-}' /etc/nginx/nginx.conf
+sudo tee /etc/nginx/conf.d/19blog.conf <<< "$config" >/dev/null
 
 tip "Start nginx"
 sudo systemctl enable nginx --now
@@ -191,6 +193,6 @@ subtip "                                -> Admin test success"
 subtip "http://your.domain/manage/test  -> Ask login: enter the manager name and passwd set above"
 subtip "                                -> Manage test success"
 subtip "NOTE: When error '502 Bad Gateway' occurs, restart fcgiwrap service by:"
-subtip "sudo systemctl stop fcgiwrap.service"
-subtip "sudo systemctl stop fcgiwrap.socket"
-subtip "sudo systemctl start fcgiwrap.socket"
+subtip "sudo systemctl stop fcgiwrap@nginx.service"
+subtip "sudo systemctl stop fcgiwrap@nginx.socket"
+subtip "sudo systemctl start fcgiwrap@nginx.socket"
