@@ -1,3 +1,5 @@
+## INSTALL
+
 #### Bash
 Most Unix-like systems have the bash shell
 >```shell

@@ -23,8 +23,11 @@ trap onInt INT
 
 tip "Setup 19blog on macos..."
 
-tip "Install brew, please visit https://brew.sh/"
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+tip "Checking for brew.."
+if ! brew; then
+    subtip "Install brew, please visit https://brew.sh/"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
 
 tip "Checking for bash version.."
 if [[ ${BASH_VERSION:0:1} -lt 4 ]]; then
@@ -205,7 +208,7 @@ server {
    }
 }
 EOF
-sudo tee /usr/local/etc/nginx/servers/19blog.conf <<< "$config" >/dev/null
+sudo tee /usr/local/etc/nginx/servers/19blog.conf <<<"$config" >/dev/null
 
 tip "Start nginx"
 brew services start nginx

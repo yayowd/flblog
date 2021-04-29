@@ -5,6 +5,9 @@
 * Add home page for blog site
 * Can register a new user
 
+#### 04/28/2021
+* Add setup bash script
+
 #### 01/10/2021
 * Add the save shortcut key ctrl+s on the edit page
 * Show blog content in columns on draft page
