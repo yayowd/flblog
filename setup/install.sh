@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## TEST: 获取当前脚本所在目录
+## TEST: Get the directory where the current script is located
 #SCRIPT_DIR=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
 
 # Adapt to different operating systems

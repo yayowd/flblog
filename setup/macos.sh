@@ -79,6 +79,9 @@ brew services start fcgiwrap
 
 tip "Make directories"
 server_root=~/srv/19blog
+if [ -e "$server_root" ]; then
+    abort "Server root path ($server_root) exists"
+fi
 home_root=$server_root/home
 blogs_root=$server_root/blogs
 cgi_root=$server_root/cgi
