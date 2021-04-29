@@ -90,6 +90,15 @@ if ! $cmd_proxy git clone $git_repository $work_path; then
     abort "Git clone failed"
 fi
 
+tip "Make runtime directories"
+blogs_dir="$work_path/blogs"
+home_dir="$work_path/home"
+mkdir "$blogs_dir"
+mkdir "$home_dir"
+subtip "Authorize the directory"
+chmod o+rw "$blogs_dir"
+chmod o+rw "$home_dir"
+
 tip "Link server root to git working diretory"
 if [ -d $server_root ]; then
     subtip "Backup current server root directory to *.old"

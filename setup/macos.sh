@@ -82,11 +82,11 @@ server_root=~/srv/19blog
 home_root=$server_root/home
 blogs_root=$server_root/blogs
 cgi_root=$server_root/cgi
-sudo mkdir -p ${home_root}
-sudo mkdir -p ${blogs_root}
-sudo mkdir -p ${cgi_root}/api
-sudo mkdir -p ${cgi_root}/admin
-sudo mkdir -p ${cgi_root}/manage
+mkdir -p ${home_root}
+mkdir -p ${blogs_root}
+mkdir -p ${cgi_root}/api
+mkdir -p ${cgi_root}/admin
+mkdir -p ${cgi_root}/manage
 
 tip "Web basic authorization"
 subtip "Create account"
