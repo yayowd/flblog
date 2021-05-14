@@ -118,7 +118,7 @@ function saveBlock() {
         # remake block html node
         mkBlock "$1" "$2" "$tc" && block=$RET
         # remove old block
-        rmBlock "$1" && ln=$(($RET - 1))
+        rmBlock "$1" && ln=$((RET - 1))
         # insert new block at the original location
         if sed -i "${ln}r"<(echo -n "$block") "$file"; then
             RET=$1
