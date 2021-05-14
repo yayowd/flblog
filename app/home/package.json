@@ -6,10 +6,11 @@
     "bugs": {
         "url": "https://github.com/yayowd/19blog/issues"
     },
-    "homepage": "https://github.com/yayowd/19blog#readme",
+    "homepage": "https://github.com/yayowd/19blog",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
+        "serve": "vite preview",
         "demo": "vite build --mode demo"
     },
     "dependencies": {
@@ -17,8 +18,8 @@
         "vue": "^3.0.5"
     },
     "devDependencies": {
-        "@vitejs/plugin-vue": "^1.0.4",
+        "@vitejs/plugin-vue": "^1.2.2",
         "@vue/compiler-sfc": "^3.0.5",
-        "vite": "^2.0.0-beta.12"
+        "vite": "^2.3.0"
     }
 }
