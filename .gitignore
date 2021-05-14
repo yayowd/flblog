@@ -1,8 +1,13 @@
+# project directories
 .idea
+
+# runtime directories
+/home/
+/blogs/
+
+# vue ignores
 node_modules
 .DS_Store
 dist
 dist-ssr
 *.local
-blogs
-/home/
