@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# This file is part of the 19blog project.
+# 19blog is a simple blog site system.
+# Copyright (C) 2020  The 19blog Authors.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# detail text for home page
+
+# --includes
+. "$(dirname "${BASH_SOURCE[0]}")/../util/home"
+
+# tag for refresh home page or not
+refreshHome=false
+
+# --save detail from post
+if [ "$REQUEST_METHOD" = 'POST' ]; then
+    if saveDetail "${uparam[detail]}"; then
+        # continue to edit and refresh home page
+        refreshHome=true
+    else
+        resErr "Save failed"
+    fi
+fi
+
+# show close button when error
+ERRCLOSE=true
+
+# get detail info
+getDetail
+
+# the detail will expand in detail.html
+resFile './detail.html'

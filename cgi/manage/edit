@@ -25,28 +25,35 @@
 #   id == NULL -> save new
 #   id != NULL -> save edit
 
-. ../util/http
-. ../util/fcgi
-. ../util/common
-. ../util/blog
-
-res200
+# --includes
+. "$(dirname "${BASH_SOURCE[0]}")/../util/blog"
 
 # tag for refresh blog list or not
 refreshList=false
 
 # var for html
-date=$(date "+%H:%M %m/%d/%Y")
+date="$(date "+%H:%M %m/%d/%Y")"
 
 id=${uparam["id"]}
 
 # --save blog from post
 if [ "$REQUEST_METHOD" = 'POST' ]; then
-    if draftSave "$id" "${uparam["title"]}" "${uparam["content"]}"; then
-        # continue to edit and refresh list
-        refreshList=true
-    else
-        resErr "Save failed"
+    if [ "${uparam["publish"]}" = '1' ]; then # publish blog
+        if draftPublish "$id" "${uparam["title"]}" "${uparam["content"]}"; then
+            # output template succ.html to refresh list and close page
+            refreshList=true
+            resFile './succ.html'
+            exit 0
+        else
+            resErr "Publish failed"
+        fi
+    else # save blog
+        if draftSave "$id" "${uparam["title"]}" "${uparam["content"]}"; then
+            # continue to edit and refresh list
+            refreshList=true
+        else
+            resErr "Save failed"
+        fi
     fi
 fi
 
@@ -54,11 +61,13 @@ if [ -n "$id" ]; then
     # show close button when error
     ERRCLOSE=true
 
-    # get blog info
-    draftBlog "$id"
+    # get blog content
+    draftContent "$id"
 
     # make remove button
     rmbtn="<input class='button remove' type='button' value='Remove' onclick='onRemove()'>"
+    # make publish button
+    plbtn="<input class='button publish' type='button' value='Publish' onclick='onPublish()'>"
 fi
 
 # the id tile and content will expand in edit.html

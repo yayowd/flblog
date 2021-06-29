@@ -19,15 +19,8 @@
 
 # blog remove
 
-. ../util/http
-. ../util/fcgi
-. ../util/common
-. ../util/blog
-
-res200
-
-# tag for refresh blog list or not
-refreshList=false
+# --includes
+. "$(dirname "${BASH_SOURCE[0]}")/../util/blog"
 
 # show close button when error
 ERRCLOSE=true
@@ -35,7 +28,6 @@ ERRCLOSE=true
 # remove blog
 rmBlog "${uparam["id"]}"
 
+# output template succ.html to refresh list and close page
 refreshList=true
-
-# output template remove.html
-resFile './remove.html'
+resFile './succ.html'

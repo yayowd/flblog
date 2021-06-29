@@ -17,32 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# block edit
-# GET:
-#   id == NULL -> add
-#   id != NULL -> edit
-# POST:
-#   id == NULL -> save new
-#   id != NULL -> save edit
+# blog config
 
-. ../util/http
-. ../util/fcgi
-. ../util/common
-. ../util/block
+# --includes
+. "$(dirname "${BASH_SOURCE[0]}")/../util/blog"
 
-res200
-
-# tag for refresh block list or not
+# tag for refresh blog list or not
 refreshList=false
 
-# var for html
-date=$(date "+%H:%M %m/%d/%Y")
-
-id=${uparam["id"]}
-
-# --save block from post
+# --save config from post
 if [ "$REQUEST_METHOD" = 'POST' ]; then
-    if saveBlock "$id" "${uparam["content"]}" "${uparam["isEdit"]}"; then
+    if saveConfig "${uparam["title"]}" "${uparam["memo"]}"; then
         # continue to edit and refresh list
         refreshList=true
     else
@@ -50,21 +35,11 @@ if [ "$REQUEST_METHOD" = 'POST' ]; then
     fi
 fi
 
-if [ -n "$id" ]; then
-    # show close button when error
-    ERRCLOSE=true
+# show close button when error
+ERRCLOSE=true
 
-    # set is edit
-    isEdit=true
-    # set id input to readonly when edit
-    readonly='readonly'
+# get config info
+getConfig
 
-    # get block info
-    blockInfo "$id"
-
-    # make remove button
-    rmbtn="<input class='button remove' type='button' value='Remove' onclick='onRemove()'>"
-fi
-
-# the id and content will expand in edit.html
-resFile './edit.html'
+# the tile and memo will expand in config.html
+resFile './config.html'

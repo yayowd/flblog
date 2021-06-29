@@ -18,34 +18,47 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # common functions
-# Dependent files:
-#       ./http
-# NOTE: should be sourced once at any cgi interface
 # NOTE: all of functions must called in main shell,
 #       and the result is $RET.
 #       because error check in function,
 #       and terminate response directly when error ocurse.
 
+# --make sure only source once
+if [ $CGI_19BLOG_COMMON ]; then
+    return
+fi
+CGI_19BLOG_COMMON=true
+
+# --includes
+. "$(dirname "${BASH_SOURCE[0]}")/http"
+
 # --directories
-rundir=$(dirname "$0")
-cgidir=$(dirname "$rundir")
-rootdir=$(dirname "$cgidir")
+#   get needed directories from cgi script path
+rundir="$(dirname "$0")"
+cgidir="$(dirname "$rundir")"
+rootdir="$(dirname "$cgidir")"
 templdir="$cgidir/templ"
+adminPasswd="$cgidir/admin/.passwd"
+managePasswd="$cgidir/manage/.passwd"
 homedir="$rootdir/home"
 blogsdir="$rootdir/blogs"
-configdir="$blogsdir/config"
-totalfile="$configdir/total"
-mkdir -p "$configdir"
-if [ ! -e "$totalfile" ]; then
-    echo "all 0" >"$totalfile"
+if [ ! -d "$blogsdir" ]; then
+    mkdir -p "$blogsdir"
 fi
 
 # --check current user
-function curUser() {
+{
     if [ -z "$REMOTE_USER" ]; then
-        resErr 'Current user is empty.'
+        # --test
+        echo 'Current user is empty.' >&2
+
+        #   not reach here when use nginx basic authorization, eg admin / manage
+        #   deal with in the page when no use nginx basic authorization, eg api
+        # resErr 'Current user is empty.'
+    else
+        # assign to user variable
+        user=$REMOTE_USER
     fi
-    RET=$REMOTE_USER
 }
 
 # --get current user's file
@@ -55,7 +68,6 @@ function curUser() {
 #   $2  templ path
 #   result is $1
 function curFile() {
-    curUser && user=$RET
     if [ ! -e "$1" ]; then
         if ! cp "$2" "$1"; then
             resErr "Can not copy template file[$2] to $user's file[$1]."

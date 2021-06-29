@@ -294,9 +294,6 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >        root        $blogs_root;
 >        try_files   \$uri \$uri.html =404;
 >    }
->    location /config/ {
->        deny all;
->    }
 >    location ~ /api/ {
 >        root                    $cgi_root;
 >        # buffer settings

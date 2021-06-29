@@ -1,3 +1,12 @@
+/**
+ * data.js
+ * home
+ *
+ * 从页面上获取指定名称的数据
+ *
+ * @author yayowd
+ * @since 2021/06/13 18:44
+ **/
 import * as R from 'ramda'
 
 function getAttr(el, name) {
@@ -11,7 +20,14 @@ function getText(el) {
     }
 }
 
-function getData(id) {
+export function getMeta(id) {
+    const el = document.getElementById(id)
+    if (!R.isNil(el)) {
+        return getText(el)
+    }
+}
+
+export function getBlock(id) {
     const el = document.getElementById(id)
     if (!R.isNil(el)) {
         return {
@@ -23,5 +39,3 @@ function getData(id) {
         }
     }
 }
-
-export default getData

@@ -2,34 +2,168 @@
 <html lang='en'>
 <head>
 <meta charset='UTF-8'>
-<link rel='icon' href='/favicon.ico'/>
+<link rel='icon' href='/favicon.ico' />
 <meta name='viewport' content='width=device-width, initial-scale=1.0'>
 <title>19blog</title>
 <link rel='stylesheet' href='19blog-home.css'>
 <style>
+* {
+padding: 0;
+}
+body {
+margin: 0;
+}
+html {
+height: 100%;
+}
 body {
 background: #f5fdf5;
+height: 100%;
+display: flex;
+flex-direction: column;
 }
-#blocks {
-font-size: 14pt;
+#content {
+flex: 1;
+display: flex;
+flex-direction: row;
 }
-#blocks pre {
+#left {
+flex: 0 0 220px;
+text-align: center;
+display: flex;
+flex-direction: column;
+}
+.header {
+background-color: rgb(199, 235, 199);
+padding: 9px;
+}
+#toolbar {
+height: 44px;
+background-color: beige;
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 0 9px;
+}
+#toolbar * {
+margin: 0 5px;
+}
+#users {
+text-align: justify;
+flex: 1;
+}
+#users>a {
+padding: 5px 9px;
+border-bottom: rgb(218, 218, 177) dotted 1px;
+text-decoration: none;
+font-size: small;
+}
+#users * {
+display: block;
+}
+#users .info {
+color: #aaa;
+}
+#middle {
+font-size: 12pt;
+min-width: 418px;
+max-width: 880px;
+padding: 9px 19px;
+flex: 1;
+border-left: #595 dashed 1px;
+border-right: #595 dashed 1px;
+}
+#middle li p:nth-child(1) {
+font-size: larger;
+font-weight: bold;
+border-bottom: #333 dotted 1px;
+}
+#middle li p:nth-child(2) {
+color: #333;
+}
+#middle pre {
 white-space: pre-wrap; /* Since CSS 2.1 */
 white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
 white-space: -o-pre-wrap; /* Opera 7 */
 word-wrap: break-word; /* Internet Explorer 5.5+ */
-/*columns: 390px;*/
-/*column-gap: 39px;*/
-/*column-rule: #b5e7bc dotted 1px;*/
-line-height: 1.6;
+/* columns: 390px; */
+/* column-gap: 39px; */
+/* column-rule: #b5e7bc dotted 1px; */
+line-height: 1.5;
+}
+#blogs .tip {
+font-weight: bold;
+margin-top: 59px;
+}
+.blog {
+color: #222;
+text-decoration: none;
+margin: 9px 0;
+display: flex;
+flex-direction: row;
+align-items: center;
+}
+.blog .separator {
+flex: 1;
+margin: 0 19px;
+border-bottom: rgb(197, 197, 149) dotted 1px;
+height: 1px;
+}
+#right {
+flex: 0 1 400px;
+display: flex;
+flex-direction: column;
+}
+#replies {
+flex: 1;
+}
+#ads {
+background-color: #fff;
 }
 </style>
+<script>
+// refresh needed page after data submitted
+function refresh() {
+location.reload()
+}
+</script>
 </head>
 <body>
 <div id='app'></div>
 <script type='module' src='19blog-home.es.js'></script>
-<ul id='blocks'>
-<!--new-block-->
-</ul>
+<div id="content">
+<div id="left">
+<!--config-->
+<div id="toolbar">
+<a href="#" onclick='window.open("api/regist")' title="register a new user">Regist</a>
+<span>|</span>
+<a href="#" onclick='window.open("admin")' title="home page of administrator">Admin</a>
+<span>|</span>
+<a href="#" onclick='window.open("manage")' title="manage blog for user">Manage</a>
+</div>
+<div id="users">
+<!--users-->
+</div>
+<div id="ads">
+<!--adsl-->
+</div>
+</div>
+<div id="middle">
+<!--details-->
+<div id="blogs">
+<p class="tip">最近发布</p>
+<!--blogs-->
+</div>
+</div>
+<div id="right">
+<div id="replies">
+<!--replies-->
+</div>
+<div id="ads">
+<!--adsr-->
+</div>
+</div>
+</div>
 </body>
 </html>

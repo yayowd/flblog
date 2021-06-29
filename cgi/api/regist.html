@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <title>Register New User</title>
+    <style type='text/css'>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #C7EDCC;
+        }
+
+        .container {
+            height: 100%;
+            width: 100%;
+            max-width: 919px;
+            background: #ebffec;
+        }
+
+        form {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .row {
+            margin: 19px 19px 0;
+        }
+
+        .tip {
+            color: dimgray;
+        }
+
+        .text {
+            background: transparent;
+            font-size: 14pt;
+            line-height: 1.6;
+            padding: 9px;
+            border: #e3f1e6 solid 1px;
+            outline: none;
+        }
+
+        .text:focus {
+            background: #f5fff5;
+            /*background-color: #fff;*/
+            background-image:
+                /*linear-gradient(90deg, transparent 79px, #abced4 79px, #abced4 81px, transparent 81px),*/
+                linear-gradient(#eee .01em, transparent .09em);
+            background-size: 100% 1.5em;
+            border: #59c9dc solid 2px;
+        }
+
+        input.text {
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+
+        textarea.text {
+            align-self: stretch;
+            letter-spacing: 2px;
+        }
+
+        .toolbar {
+            border-top: #e2f3e4 dashed 1px;
+            text-align: center;
+            padding: 9px;
+        }
+
+        .button {
+            width: 99px;
+            height: 33px;
+            background-color: white;
+            border: #59c9dc dotted 1px;
+            outline: none;
+        }
+
+        .button:active {
+            outline: #59c9dc solid 2px;
+        }
+    </style>
+    <script>
+        // form content has changed or not
+        let changed = false
+        // is form submit or not
+        let submited = false
+
+        function onChange() {
+            changed = true
+        }
+
+        function onReset() {
+            changed = false
+        }
+
+        function onSubmit() {
+            submited = changed
+            return submited
+        }
+
+        function onClose() {
+            window.close()
+        }
+
+        window.onbeforeunload = function (e) {
+            // blur current active element to trig onchange event
+            // and update changed flag immediately
+            const active = document.activeElement
+            active && active.blur()
+
+            if (!submited && changed) {
+                const dialogText = 'The form has not been saved, Are you sure to close?'
+                // Compatible with versions prior to IE8 and Firefox 4
+                e && (e.returnValue = dialogText)
+                // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
+                return dialogText
+            }
+        }
+
+        // hold ctrl + s to save blog
+        // hold esc to close page
+        document.onkeydown = function (e) {
+            if (e.ctrlKey && e.key === "s") {
+                e.preventDefault()
+
+                const save = document.getElementById('save')
+                save.focus()
+                save.click()
+            } else if (e.code === 'Escape') {
+                onClose()
+            }
+        }
+
+        // if user saved successed, refresh home
+        if ($refreshHome && window.opener) {
+            window.opener.refresh()
+        }
+    </script>
+</head>
+
+<body>
+    <div class='container'>
+        <form method='post' enctype='multipart/form-data' onchange='onChange()' onreset='onReset()' onsubmit='return onSubmit()'>
+            <p class='row tip'>INFOMATION FOR NEW USER:</p>
+            <input class='row text' type='text' name='name' placeholder='Name' value='$name' required>
+            <input class='row text' type='text' name='password' placeholder='Password' value='$password' required>
+            <input class='row text' type='text' name='memo' placeholder='Memo' value='$memo'>
+            <div class='toolbar'>
+                <input id='save' class='button' type='submit' value='Save'>
+                <input class='button' type='button' value='Close' onclick='onClose()'>
+                <input class='button' type='reset' value='Reset'>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

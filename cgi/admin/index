@@ -17,17 +17,41 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# The index page for system administration.
+# The home page for administrator
 
-. ../util/http
-. ../util/fcgi
-. ../util/common
-. ../util/block
+# --includes
+. "$(dirname "${BASH_SOURCE[0]}")/../util/home"
 
-res200
+# tag for refresh home page or not
+refreshHome=false
 
-# get block list from home
-blockList && list=$RET
+# --save data from post
+if [ "$REQUEST_METHOD" = 'POST' ]; then
+    # save config
+    if ! saveConfig "${uparam["title"]}" "${uparam["memo"]}"; then
+        resErr "Save config failed"
+    fi
+    # save or remove ads left
+    if ! saveAD "l" "${uparam["adsl_url"]}" "${uparam["adsl_html"]}"; then
+        resErr "Save or remove ads left failed"
+    fi
+    # save or remove ads right
+    if ! saveAD "r" "${uparam["adsr_url"]}" "${uparam["adsr_html"]}"; then
+        resErr "Save or remove ads right failed"
+    fi
 
-# the list will expand in index.html
+    # continue to edit and refresh home page
+    refreshHome=true
+
+    res303
+fi
+
+# get config info
+getConfig
+# get ads left
+getAD "l"
+# get ads right
+getAD "r"
+
+# the tile and memo will expand in index.html
 resFile './index.html'

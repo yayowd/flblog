@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+
+# This file is part of the 19blog project.
+# 19blog is a simple blog site system.
+# Copyright (C) 2020  The 19blog Authors.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# data functions
+# NOTE: all of functions must called in main shell,
+#       and the result is $RET.
+#       because error check in function,
+#       and terminate response directly when error ocurse.
+
+# --make sure only source once
+if [ $CGI_19BLOG_DATA ]; then
+    return
+fi
+CGI_19BLOG_DATA=true
+
+# --includes
+. "$(dirname "${BASH_SOURCE[0]}")/http"
+
+# --get next data id
+#   use uuid instead
+function nextId() {
+    RET="$(cat /proc/sys/kernel/random/uuid)"
+    return 0 # this statement must be included to ensure filling of the return value $RET
+}
+
+# --remove data in file
+#   $1      file path
+#   $2      begin key, must at start of a line
+#   $3      end key, must be a single line
+#   $4      not show error
+#     true      no error when not found
+#     false     show error when not found
+#   $RET is the first line number of removed data
+function remove() {
+    if [ -z "$1" ]; then
+        resErr 'No file path to remove data.'
+    fi
+    if [ -z "$2" ]; then
+        resErr 'No begin key to remove data.'
+    fi
+    if [ -z "$3" ]; then
+        resErr 'No end key to remove data.'
+    fi
+    # get first and last line number by key
+    be="$(sed -n "/^$2/=" "$1")"
+    if [ -n "$be" ]; then
+        en="$(sed -n "$be,\${/^$3$/{=;q}}" "$1")"
+        if [ -n "$en" ]; then
+            # delete data lines
+            if sed -i "$be,${en}d" "$1"; then
+                RET=$be
+            else
+                resErr "Error to remove data."
+            fi
+        elif [ ! $4 ]; then
+            resErr "Can not find $be+ lines end key($3) in file($1) to remove data."
+        fi
+    elif [ ! $4 ]; then
+        resErr "Can not find begin key($2) in file($1) to remove data."
+    fi
+}
+
+# --save data to file
+#   $1      file path
+#   $2      insert anchor
+#   $3      insert line number
+#   $4      data
+#   no result
+function save() {
+    if [ -z "$1" ]; then
+        resErr 'No file path to save data.'
+    fi
+    if [ -z "$4" ]; then
+        resErr 'No data to save data.'
+    fi
+    if [ -n "$2" ]; then # insert data after anchor
+        sed -i "/^$2/r"<(echo -n "$4") "$1"
+    elif [ -n "$3" ]; then # insert data after line number
+        sed -i "$3r"<(echo -n "$4") "$1"
+    else
+        resErr 'No anchor or line number to save data.'
+    fi
+}
+
+# --read multiple lines in tag
+#   $1      file path
+#   $2      line number of tag start
+#   $3      tag name, default is pre
+#   $RET is the data in pre tag
+function readData() {
+    if [ -z "$1" ]; then
+        resErr 'No file path to read data.'
+    fi
+    if [ -z "$2" ]; then
+        resErr 'No line number of tag start to read data.'
+    fi
+    # # --bash command substitution with any trailing newlines deleted
+    # RET="$(sed -n "$2{ \
+    #            :jc n; \
+    #                /<\/${3:-pre}>$/b jt; \
+    #                p; b jc; \
+    #            :jt s/^\(.*\)<\/${3:-pre}>$/\1/p \
+    #         }" "$1")"
+    # --avoid bash command substitution to remove any trailing newlines
+    #   add char 'x' at the end in command substitution output and then remove it at result
+    #   additional to remove extra '\n' at the end of sed output
+    RET="$(
+        sed -n "$2{ \
+               :jc n; \
+                   /<\/${3:-pre}>$/b jt; \
+                   p; b jc; \
+               :jt s/^\(.*\)<\/${3:-pre}>$/\1/p \
+            }" "$1"
+        printf x
+    )"
+    RET=${RET%$'\n'x}
+    # # --use read to keep trailing newlines ('\n') in command substitution
+    # IFS= read -r -d '' RET < <(sed -n "$2{ \
+    #            :jc n; \
+    #                /<\/${3:-pre}>$/b jt; \
+    #                p; b jc; \
+    #            :jt s/^\(.*\)<\/${3:-pre}>$/\1/p \
+    #         }" "$1")
+
+    # --test
+    # { sed -n "$2{ \
+    #            :jc n; \
+    #                /<\/${3:-pre}>$/b jt; \
+    #                p; b jc; \
+    #            :jt s/^\(.*\)<\/${3:-pre}>$/\1/p \
+    #         }" "$1"; printf x; } >&2
+    # echo -n "--------->readData=$RET" >&2
+    # hexdump >&2 <<<"$RET"
+}

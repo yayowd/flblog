@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang='en'>
+
 <head>
-	<meta charset='UTF-8'>
-	<title>System Administration</title>
-	<style type='text/css'>
+    <meta charset='UTF-8'>
+    <title>Home Administration</title>
+    <style type='text/css'>
         * {
             padding: 0;
             margin: 0;
@@ -17,18 +18,17 @@
             height: 100%;
             display: flex;
             flex-direction: column;
+            background: #ebffec;
+        }
+
+        form {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
-            background-color: #59c9dc;
-            padding: 19px;
-            font-size: large;
-            font-weight: bold;
-            color: white;
-        }
-
-        .toolbar {
-            padding: 0 39px;
+            padding: 9px 19px;
             height: 44px;
             background-color: beige;
             display: flex;
@@ -36,46 +36,194 @@
             align-items: center;
         }
 
-        .list {
-            flex: 1;
-            background-color: #faf6f6;
-            overflow: auto;
+        .header * {
+            margin: 0 9px;
         }
 
-        .list li {
+        .block {
+            margin: 9px 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .row {
+            background: transparent;
+            font-size: 14pt;
+            line-height: 1.6;
+            padding: 9px;
+            border: #e3f1e6 solid 1px;
+            outline: none;
+            margin: 9px 0;
+        }
+
+        .row:focus {
+            background: #f5fff5;
+            /*background-color: #fff;*/
+            background-image:
+                /*linear-gradient(90deg, transparent 79px, #abced4 79px, #abced4 81px, transparent 81px),*/
+                linear-gradient(#eee .01em, transparent .09em);
+            background-size: 100% 1.5em;
+            border: #59c9dc solid 2px;
+        }
+
+        input.row {
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+
+        textarea.row {
+            letter-spacing: 2px;
+        }
+
+        #ads {
             display: flex;
             flex-direction: row;
-            align-items: center;
+            flex: 1;
+        }
+
+        #ads .block {
+            flex: 1;
+        }
+
+        #ads textarea {
+            flex: 1;
+        }
+
+        .toolbar {
+            border-top: #e2f3e4 dashed 1px;
+            text-align: center;
             padding: 9px;
-            border-bottom: bisque dotted 2px;
-            flex-wrap: wrap;
-            word-break: break-word;
-            white-space: pre-wrap;
         }
 
-        .list span:nth-child(1) {
-            flex-shrink: 0;
-            text-align: right;
-            margin-right: 9px;
+        .button {
+            width: 99px;
+            height: 33px;
+            background-color: white;
+            border: #59c9dc dotted 1px;
+            outline: none;
         }
 
-        .list span:nth-child(2) {
-            flex-shrink: 0;
-            margin-right: 9px;
+        .button:active {
+            outline: #59c9dc solid 2px;
+        }
+    </style>
+    <script>
+        // form content has changed or not
+        let changed = false
+        // is form submit or not
+        let submited = false
+
+        function onChange() {
+            changed = true
         }
 
-        .list a {
-            display: inline-flex;
+        function onReset() {
+            changed = false
         }
-	</style>
+
+        function onSubmit() {
+            submited = changed
+            return submited
+        }
+
+        function onClose() {
+            window.close()
+        }
+
+        window.onbeforeunload = function (e) {
+            // blur current active element to trig onchange event
+            // and update changed flag immediately
+            const active = document.activeElement
+            active && active.blur()
+
+            if (!submited && changed) {
+                const dialogText = 'The form has not been saved, Are you sure to close?'
+                // Compatible with versions prior to IE8 and Firefox 4
+                e && (e.returnValue = dialogText)
+                // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
+                return dialogText
+            }
+        }
+
+        // hold ctrl + s to save blog
+        // hold esc to close page
+        document.onkeydown = function (e) {
+            if (e.ctrlKey && e.key === "s") {
+                e.preventDefault()
+
+                const save = document.getElementById('save')
+                save.focus()
+                save.click()
+            } else if (e.code === 'Escape') {
+                onClose()
+            }
+        }
+    </script>
+    <script>
+        // // home page opened from this page
+        // let pageHome = undefined
+
+        // // open home page
+        // function openHome() {
+        //     pageHome = window.open('/')
+        // }
+
+        // refresh needed page after data submitted
+        function refresh() {
+            if (window.opener) {
+                window.opener.location.reload()
+            }
+
+            // // CAN NOT WORK: because pageHome always undefined after form submitted
+            // if (pageHome) {
+            //     pageHome.location.reload()
+            // }
+        }
+
+        // if saved successed, refresh home
+        if ($refreshHome) {
+            refresh()
+        }
+    </script>
 </head>
+
 <body>
-<div class='header'><a href='/' target='_blank'>System Home Page</a></div>
-<div class='toolbar'>
-	<a href='#' onclick='window.open("edit")'>Add block</a>
-</div>
-<div class='list'>
-	<ul>$list</ul>
-</div>
+    <form method='post' enctype='multipart/form-data' onchange='onChange()' onreset='onReset()' onsubmit='return onSubmit()'>
+        <div class="header">
+            <span>WELCOME ${user^^}</span>
+            <!-- <span>|</span> -->
+            <!-- <a href="#" onclick='openHome()' title='open homa page in new window'>Home Page</a> -->
+            <span>|</span>
+            <a href="#" onclick='window.open("detail")' title="edit detail text on home page">Detail</a>
+            <span>|</span>
+            <a href="#" onclick='window.open("regist")' title="register a new user">Regist</a>
+        </div>
+        <div class='block'>
+            <h2>Config</h2>
+            <input class='row' type='text' name='title' placeholder='Title' value='$title' required>
+            <textarea class='row' name='memo' rows="3" placeholder='Memo' required>
+$memo</textarea>
+        </div>
+        <div id="ads">
+            <div class="block">
+                <h2>Ads left</h2>
+                <input class='row' type='text' name='adsl_url' placeholder='URL(leave empty to remove)' value='$adsl_url'>
+                <textarea class='row' name='adsl_html' rows="5" placeholder='HTML'>
+$adsl_html</textarea>
+            </div>
+            <div class="block">
+                <h2>Ads right</h2>
+                <input class='row' type='text' name='adsr_url' placeholder='URL(leave empty to remove)' value='$adsr_url'>
+                <textarea class='row' name='adsr_html' rows="5" placeholder='HTML'>
+$adsr_html</textarea>
+            </div>
+        </div>
+        <div class='toolbar'>
+            <input id='save' class='button' type='submit' value='Save'>
+            <input class='button' type='button' value='Close' onclick='onClose()'>
+            <input class='button' type='reset' value='Reset'>
+        </div>
+    </form>
 </body>
+
 </html>

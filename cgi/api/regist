@@ -17,25 +17,31 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# block remove
+# The user register page.
 
-. ../util/http
-. ../util/fcgi
-. ../util/common
-. ../util/block
+# --includes
+. "$(dirname "${BASH_SOURCE[0]}")/../util/home"
 
-res200
+# --do not open user registration
+if [ -z "$user" ]; then
+    # show close button when error
+    ERRCLOSE=true
+    resErr "User registration is not yet open. Please contact administrator."
+fi
 
-# tag for refresh block list or not
-refreshList=false
+# tag for refresh home page or not
+refreshHome=false
 
-# show close button when error
-ERRCLOSE=true
+# --save data from post
+if [ "$REQUEST_METHOD" = 'POST' ]; then
+    # save user
+    if ! saveUser "${uparam["name"]}" "${uparam["password"]}" "${uparam["memo"]}"; then
+        resErr "Save user failed"
+    fi
 
-# remove block
-rmBlock "${uparam["id"]}"
+    # continue to edit and refresh home page
+    refreshHome=true
+fi
 
-refreshList=true
-
-# output template remove.html
-resFile './remove.html'
+# output template regist.html
+resFile "$(dirname "${BASH_SOURCE[0]}")/regist.html"

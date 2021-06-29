@@ -18,9 +18,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # cgi functions
-# Dependent files:
-#       ./http
-# NOTE: should be sourced once at any cgi interface
 # NOTE: all of functions must called in main shell,
 #       and the result is $RET.
 #       because error check in function,
@@ -54,6 +51,15 @@
 # fastcgi_param REMOTE_USER         $remote_user;
 # fastcgi_param PATH_INFO           $1;
 
+# --make sure only source once
+if [ $CGI_19BLOG_FCGI ]; then
+    return
+fi
+CGI_19BLOG_FCGI=true
+
+# --includes
+. "$(dirname "${BASH_SOURCE[0]}")/http"
+
 # --pasrse request params
 #   need bash v4.0+
 declare -A uparam
@@ -61,7 +67,7 @@ declare -A uparam
 # --decode query param value
 function urldecode() {
     : "${*//+/ }"
-    RET=$(echo -e "${_//%/\\x}")
+    RET="$(echo -e "${_//%/\\x}")"
 }
 # --parse query string params
 #   no result, just fill $uparam
@@ -82,14 +88,17 @@ function readBody() {
     if [ "$type" = 'application/x-www-form-urlencoded' ]; then
         parseQuery
     elif [ "$type" = 'multipart/form-data' ]; then
-        while read -r -d $'\r' line; do
+        while IFS=$'\n' read -r -d $'\r' line; do
+            # --test
+            # echo -n "--------->line=$line" >&2
+            # hexdump >&2 <<<"$line"
             if [[ "$line" =~ ^--$boundary ]]; then
                 # parse next tow lines
                 IFS=' :;=' read -r -d $'\r' _ disposition _ name _ filename || break # stop when no more lines
-                IFS=' :' read -r -d $'\r' _ ctype # may be a blank line or content type line
-                # formate names
-                name=${name//[\\:\/\"\']/}
-                filename=${filename//[\\:\/\"\']/}
+                IFS=' :' read -r -d $'\r' _ ctype                                    # may be a blank line or content type line
+                # format names: delete special characters
+                name=${name//[:\/\"\'\\]/}
+                filename=${filename//[:\/\"\'\\]/}
                 # check attr file type
                 if [[ -n "$ctype" ]]; then
                     if [[ -n "$filename" && ! "$ctype" =~ ^text/ ]]; then
@@ -98,7 +107,7 @@ function readBody() {
                     read -r -d $'\r' _ # skip blank line when have content type line
                 fi
                 # set param value from next line
-                read -r -d $'\r' uparam[$name]
+                IFS=$'\n' read -r -d $'\r' uparam[$name]
             else
                 # append multi-lines value
                 uparam[$name]=${uparam[$name]}$'\n'$line
@@ -107,6 +116,8 @@ function readBody() {
     fi
 }
 readBody
+# --test
+# echo -n "--------->uparam names=${!uparam[*]}" >&2
 
 # --test
 #parseQuery "client=firefox-b-d&ei=sT7fX5CPAYfahwPWsJko&q=bash+%E5%B0%86%E5%8F%98%E9%87%8F%E5%86%99%E5%85%A5%E6%96%87%E4%BB%B6&oq=bash+%E5%B0%86%E5%8F%98%E9%87%8F%E5%86%99%E5%85%A5%E6%96%87%E4%BB%B6&gs_lcp=CgZwc3ktYWIQA1D152pYrLhrYPa5a2gAcAB4AIABtjyIAd9ekgENMy0xLjEuMC4xLjktMpgBAKABAaoBB2d3cy13aXrAAQE&sclient=psy-ab&ved=0ahUKEwjQq-KSw9ztAhUH7WEKHVZYBgUQ4dUDCAw&uact=5"

@@ -19,15 +19,14 @@
 
 # The index page for user blog manager.
 
-. ../util/http
-. ../util/fcgi
-. ../util/common
-. ../util/blog
-
-res200
+# --includes
+. "$(dirname "${BASH_SOURCE[0]}")/../util/blog"
 
 # get draft list for current user
 draftList && list=$RET
+
+# get config info
+getConfig
 
 # the list will expand in index.html
 resFile './index.html'

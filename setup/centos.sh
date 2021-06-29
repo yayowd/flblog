@@ -130,9 +130,6 @@ server {
        root        $blogs_root;
        try_files   \$uri \$uri.html =404;
    }
-   location /config/ {
-       deny all;
-   }
    location ~ /api/ {
        root                    $cgi_root;
        # buffer settings
@@ -147,6 +144,7 @@ server {
        fastcgi_pass            unix:$socket_path;
    }
    rewrite ^/admin$ /admin/index permanent;
+   rewrite ^/admin/$ /admin/index permanent;
    location ~ /admin/ {
        root                    $cgi_root;
        # basic authorization
@@ -164,6 +162,7 @@ server {
        fastcgi_pass            unix:$socket_path;
    }
    rewrite ^/manage$ /manage/index permanent;
+   rewrite ^/manage/$ /manage/index permanent;
    location ~ /manage/ {
        root                    $cgi_root;
        # basic authorization
