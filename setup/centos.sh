@@ -113,7 +113,7 @@ sudo chmod +x ${cgi_root}/manage/test
 
 tip "Config nginx"
 log_path=/var/log/nginx
-server_name=domain.you
+read -p 'Please input you domain:' server_name
 read -d '' config <<-EOF
 # for 19blog
 server {
