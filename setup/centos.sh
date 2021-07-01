@@ -56,9 +56,9 @@ sudo mkdir -p ${blogs_root}
 sudo mkdir -p ${cgi_root}/api
 sudo mkdir -p ${cgi_root}/admin
 sudo mkdir -p ${cgi_root}/manage
-sudo chown -R nginx:nginx $${cgi_root}
-sudo chcon -Ru system_u $${cgi_root}
-sudo chcon -Rt httpd_sys_content_t $${cgi_root}
+sudo chown -R nginx:nginx ${cgi_root}
+sudo chcon -Ru system_u ${cgi_root}
+sudo chcon -Rt httpd_sys_content_t ${cgi_root}
 
 tip "Web basic authorization"
 subtip "Install web tools"
