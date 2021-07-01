@@ -13,11 +13,11 @@
   >$ sudo ln -s <git_working_diretory> ~/srv/19blog
   >```
 <pre>
-NOTE: When you clone the respository, there has two test account
+NOTE: When you clone the respository, there has some test account
       in web basic authorization file(.passwd),
       for admin:  19blog/cgi/admin/.passwd  -> name is admin, passwd is 123
-      for manage: 19blog/cgi/manage/.passwd -> name is yy,    passwd is 123
-      you can also add your dev account into .passwd.
+      you can login with admin, and then add you own manager account.
+      you can also change password for admin use htpasswd command.
 </pre>
 
 #### DIRECTORY LIST
@@ -26,7 +26,6 @@ NOTE: When you clone the respository, there has two test account
 │   ├── home       vue home webapp
 │   └── blog       vue blog webapp
 ├── blogs        runtime directory, save all user data
-│   └── config     status and statistics
 ├── cgi          shell files for fastcgi
 │   ├── admin      administrator pages
 │   ├── api        api for webapps

@@ -11,4 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+
 .vscode
+
+cgi/manage/.passwd
