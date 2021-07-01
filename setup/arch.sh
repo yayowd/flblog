@@ -108,7 +108,10 @@ sudo chmod +x ${cgi_root}/manage/test
 
 tip "Config nginx"
 log_path=/var/log/nginx
-read -p 'Please input you domain:' server_name
+read -p 'Please input you domain: ' server_name
+if [ -z "$server_name" ]; then
+    abort "Domain cannot be empty"
+fi
 read -d '' config <<-EOF
 # for 19blog
 server {
@@ -185,13 +188,13 @@ tip "Start nginx"
 sudo systemctl enable nginx --now
 
 tip "Testing"
-subtip "http://your.domain/             -> Welcom to 19blog"
-subtip "http://your.domain/test         -> Test's blog"
-subtip "http://your.domain/api/test     -> API test success"
-subtip "http://your.domain/admin/test   -> Ask login: enter the administartor name and passwd set above"
-subtip "                                -> Admin test success"
-subtip "http://your.domain/manage/test  -> Ask login: enter the manager name and passwd set above"
-subtip "                                -> Manage test success"
+subtip "http://$server_name/             -> Welcom to 19blog"
+subtip "http://$server_name/test         -> Test's blog"
+subtip "http://$server_name/api/test     -> API test success"
+subtip "http://$server_name/admin/test   -> Ask login: enter the administartor name and passwd set above"
+subtip "                                 -> Admin test success"
+subtip "http://$server_name/manage/test  -> Ask login: enter the manager name and passwd set above"
+subtip "                                 -> Manage test success"
 subtip "NOTE: When error '502 Bad Gateway' occurs, restart fcgiwrap service by:"
 subtip "sudo systemctl stop fcgiwrap.service"
 subtip "sudo systemctl stop fcgiwrap.socket"
