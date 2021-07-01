@@ -45,6 +45,10 @@ blogsdir="$rootdir/blogs"
 if [ ! -d "$blogsdir" ]; then
     mkdir -p "$blogsdir"
 fi
+if [ ! -d "$homedir" ]; then
+    mkdir -p "$homedir"
+    chmod o+rw "$homedir"
+fi
 
 # --check current user
 {

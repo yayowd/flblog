@@ -39,6 +39,7 @@ initEnv() {
                 sudo pacman --needed --noconfirm -S git
             fi
             server_root=/srv/19blog
+            web_user=http
             ;;
         # CentOS Linux
         centos)
@@ -50,6 +51,7 @@ initEnv() {
                 sudo yum install -y git
             fi
             server_root=/srv/19blog
+            web_user=nginx
             ;;
         *)
             abort "your os is not support yet."
@@ -90,16 +92,12 @@ if ! $cmd_proxy git clone $git_repository $work_path; then
     abort "Git clone failed"
 fi
 
-tip "Make runtime directories"
-blogs_dir="$work_path/blogs"
-home_dir="$work_path/home"
-mkdir "$blogs_dir"
-mkdir "$home_dir"
-subtip "Authorize the directory"
-chmod o+rw "$blogs_dir"
-chmod o+rw "$home_dir"
+if [ -n "$web_user" ]; then
+    subtip "Authorize the directory"
+    sudo chown -R "${web_user}:${web_user}" ${work_path}
+fi
 
-tip "Link server root to git working diretory"
+tip "Link server root($server_root) to git working diretory($work_path)"
 if [ -d $server_root ]; then
     subtip "Backup current server root directory to *.old"
     sudo mv $server_root $server_root.old
