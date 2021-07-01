@@ -37,7 +37,10 @@ subtip "Install fcgiwrap from EPEL"
 sudo yum install -y epel-release
 sudo yum --enablerepo=epel install -y fcgiwrap
 subtip "Start fastcgiwrap"
-sudo systemctl enable fcgiwrap@nginx.socket --now
+sudo systemctl enable fcgiwrap@nginx.socket
+sudo systemctl stop fcgiwrap@nginx.service
+sudo systemctl stop fcgiwrap@nginx.socket
+sudo systemctl start fcgiwrap@nginx.socket
 subtip "Find unix socket path of fastcgiwrap"
 socket_path=$(sudo systemctl status fcgiwrap@nginx.socket | grep Listen:)
 socket_path=${socket_path#*Listen: }
@@ -187,7 +190,9 @@ EOF
 sudo tee /etc/nginx/conf.d/19blog.conf <<< "$config" >/dev/null
 
 tip "Start nginx"
-sudo systemctl enable nginx --now
+sudo systemctl enable nginx
+sudo systemctl stop nginx
+sudo systemctl start nginx
 
 tip "Testing"
 subtip "http://$server_name/             -> Welcom to 19blog"

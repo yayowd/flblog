@@ -75,7 +75,7 @@ tee $fcgiwrap_root/homebrew.mxcl.fcgiwrap.plist <<-EOF
  </dict>
 </plist>
 EOF
-brew services start fcgiwrap
+brew services restart fcgiwrap
 
 tip "Make directories"
 server_root=~/srv/19blog
@@ -216,7 +216,7 @@ EOF
 sudo tee /usr/local/etc/nginx/servers/19blog.conf <<<"$config" >/dev/null
 
 tip "Start nginx"
-brew services start nginx
+brew services restart nginx
 
 tip "Testing"
 subtip "http://$server_name/             -> Welcom to 19blog"

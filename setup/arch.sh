@@ -34,7 +34,10 @@ fi
 tip "Install web server.."
 sudo pacman --needed --noconfirm -S nginx fcgiwrap
 subtip "Start fastcgiwrap"
-sudo systemctl enable fcgiwrap.socket --now
+sudo systemctl enable fcgiwrap.socket
+sudo systemctl stop fcgiwrap.service
+sudo systemctl stop fcgiwrap.socket
+sudo systemctl start fcgiwrap.socket
 subtip "Find unix socket path of fastcgiwrap"
 socket_path=$(sudo systemctl status fcgiwrap.socket | grep Listen:)
 socket_path=${socket_path#*Listen: }
@@ -185,7 +188,9 @@ sudo sed -i '0,/[[:space:]]\+server {/{//i # for 19blog\ninclude 19blog.conf;\n
 }' /etc/nginx/nginx.conf
 
 tip "Start nginx"
-sudo systemctl enable nginx --now
+sudo systemctl enable nginx
+sudo systemctl stop nginx
+sudo systemctl start nginx
 
 tip "Testing"
 subtip "http://$server_name/             -> Welcom to 19blog"
