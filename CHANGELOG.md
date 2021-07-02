@@ -1,9 +1,13 @@
 ### THE CHANGE LOG FOR 19BLOG
 
 #### TODO
-* Move published blog to blog file
+* Message board on the homepage
+* Leave a message to the blog
+
+#### 6/28/2021
 * Add home page for blog site
 * Can register a new user
+* Publish blog from draft
 
 #### 04/28/2021
 * Add setup bash script
