@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-echo "HTTP/1.1 200 OK"
-echo "Content-Type: text/html; charset=UTF-8"
-echo
-echo "<meta http-equiv='content-type' content='text/html; charset=utf-8'>"
-echo "<h2>Admin test success</h2>bash version($BASH_VERSION)<br/>run as usr($(whoami))<br/><br/>$(date)"

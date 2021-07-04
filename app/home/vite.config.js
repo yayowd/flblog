@@ -6,7 +6,7 @@ import { resolve } from 'path'
 export default defineConfig({
     plugins: [vue()],
     build: {
-        outDir: '../../home',
+        outDir: '../../dist',
         lib: {
             entry: resolve(__dirname, 'src/main.js'),
             name: 'HomeLib',

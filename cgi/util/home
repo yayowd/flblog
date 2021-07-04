@@ -38,7 +38,7 @@ CGI_19BLOG_HOME=true
 # --get home file
 #   result is home file path
 function homeFile() {
-    curFile "$homedir/index.html" "$templdir/home.html"
+    curFile "$blogsdir/index.html" "$templdir/home.html"
 }
 
 # --get home config

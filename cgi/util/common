@@ -37,17 +37,13 @@ CGI_19BLOG_COMMON=true
 rundir="$(dirname "$0")"
 cgidir="$(dirname "$rundir")"
 rootdir="$(dirname "$cgidir")"
+configdir="$rootdir/config"
 templdir="$cgidir/templ"
-adminPasswd="$cgidir/admin/.passwd"
-managePasswd="$cgidir/manage/.passwd"
-homedir="$rootdir/home"
+adminPasswd="$configdir/.passwd_admin"
+managePasswd="$configdir/.passwd_manage"
 blogsdir="$rootdir/blogs"
 if [ ! -d "$blogsdir" ]; then
     mkdir -p "$blogsdir"
-fi
-if [ ! -d "$homedir" ]; then
-    mkdir -p "$homedir"
-    chmod o+rw "$homedir"
 fi
 
 # --check current user

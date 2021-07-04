@@ -2,10 +2,6 @@
 .idea
 .vscode
 
-# runtime directories
-/home/
-/blogs/
-
 # vue ignores
 node_modules
 
@@ -15,4 +11,9 @@ dist
 dist-ssr
 *.local
 
-cgi/manage/.passwd
+# runtime directories
+/blogs/
+
+# release directories
+/dist/
+/release/
