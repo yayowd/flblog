@@ -31,6 +31,23 @@ if [[ ${BASH_VERSION:0:1} -lt 4 ]]; then
     abort "Open a new terminal window and try again"
 fi
 
+tip "Configuration.."
+read -e -r -p "Enter server path [/srv]: " server_path
+server_path=${server_path%/}
+server_path=${server_path:-/srv}
+server_root=${server_path}/19blog
+if [ -d "$server_root" ]; then
+    abort "Server root path ($server_root) exists"
+fi
+read -e -r -p "Enter password for administrator: " admin_passwd
+if [ -z "$admin_passwd" ]; then
+    abort "Password for administrator can not be empty"
+fi
+read -e -r -p "Enter you domain: " server_name
+if [ -z "$server_name" ]; then
+    abort "Domain cannot be empty"
+fi
+
 tip "Install web server.."
 sudo pacman --needed --noconfirm -q -S nginx fcgiwrap
 subtip "Start fastcgiwrap"
@@ -48,14 +65,7 @@ fi
 
 tip "Get files.."
 subtip "Prepare directory"
-read -e -r -p "Enter server path [/srv]: " server_path
-server_path=${server_path%/}
-server_path=${server_path:-/srv}
 sudo mkdir -p "$server_path"
-server_root=${server_path}/19blog
-if [ -d "$server_root" ]; then
-    abort "Server root path ($server_root) exists"
-fi
 subtip "Install file tools"
 sudo pacman --needed --noconfirm -q -S wget unzip
 subtip "Download project package"
@@ -86,10 +96,6 @@ tip "Web basic authorization"
 subtip "Install web tools"
 sudo pacman --needed --noconfirm -q -S apache
 subtip "Create account for administrator"
-read -e -r -p "Enter password for administrator: " admin_passwd
-if [ -z "$admin_passwd" ]; then
-    abort "Password for administrator can not be empty"
-fi
 sudo -u http touch "${config_root}/.passwd_admin"
 sudo -u http touch "${config_root}/.passwd_manage"
 sudo -u http htpasswd -b "${config_root}/.passwd_admin" admin "$admin_passwd"
@@ -97,10 +103,6 @@ subtip "administrator account: for admin  -> name is admin, passwd is $admin_pas
 
 tip "Config nginx"
 log_path=/var/log/nginx
-read -e -r -p "Enter you domain: " server_name
-if [ -z "$server_name" ]; then
-    abort "Domain cannot be empty"
-fi
 read -d '' config <<-EOF
 # for 19blog
 server {
@@ -181,7 +183,7 @@ tip "Testing"
 subtip "http://$server_name/admin     -> Use administartor account to login, config home page and registe new user"
 subtip "http://$server_name/          -> Your home page"
 subtip "NOTE:"
-subtip "When error '502 Bad Gateway' occurs, restart fcgiwrap service by:"
-subtip "sudo systemctl stop fcgiwrap.service"
-subtip "sudo systemctl stop fcgiwrap.socket"
-subtip "sudo systemctl start fcgiwrap.socket"
+subtip "  When error '502 Bad Gateway' occurs, restart fcgiwrap service by:"
+subtip "  sudo systemctl stop fcgiwrap.service"
+subtip "  sudo systemctl stop fcgiwrap.socket"
+subtip "  sudo systemctl start fcgiwrap.socket"
