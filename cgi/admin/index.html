@@ -185,12 +185,26 @@
             refresh()
         }
     </script>
+    <script>
+        // logout
+        function logout() {
+            const req = new XMLHttpRequest()
+            req.open("GET", location.href, false, "logout", "")
+            req.onload = function (e) {
+                location.reload(true)
+            }
+            req.onerror = function (e) {
+                alert("logout failed, please try again.")
+            }
+            req.send()
+        }
+    </script>
 </head>
 
 <body>
     <form method='post' enctype='multipart/form-data' onchange='onChange()' onreset='onReset()' onsubmit='return onSubmit()'>
         <div class="header">
-            <span>WELCOME ${user^^}</span>
+            <span>WELCOME <a href='#' onclick="logout()" title="click to logout">${user^^}</a></span>
             <!-- <span>|</span> -->
             <!-- <a href="#" onclick='openHome()' title='open homa page in new window'>Home Page</a> -->
             <span>|</span>

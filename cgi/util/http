@@ -45,11 +45,19 @@ function onExit() {
     echo -n "$RESBODY"
 }
 trap onExit EXIT
-# set response code
+# set response code -- for original http protocol
+#   $1  code
+#   $2  descript
+function resCode0() {
+    printf -v RESCODE 'HTTP/1.1 %s %s' "$1" "$2"
+    RESHEAD=''
+    RESBODY=''
+}
+# set response code -- for nginx
 #   $1  code
 #   $2  descript
 function resCode() {
-    printf -v RESCODE 'HTTP/1.1 %s %s' "$1" "$2"
+    printf -v RESCODE 'Status: %s %s' "$1" "$2"
     RESHEAD=''
     RESBODY=''
 }
@@ -83,6 +91,15 @@ function res301() {
 function res303() {
     resCode 303 'See Other'
     resHead 'Location' "$1"
+    exit 0
+}
+# response 401 -- no use
+#   $1  status
+#   $2  html message
+function res401() {
+    resCode 401 'Unauthorized'
+    resHead 'WWW-Authenticate' "Basic realm=\"$1\""
+    resBody "$2"
     exit 0
 }
 # response a html template file
