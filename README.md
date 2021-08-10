@@ -1,6 +1,14 @@
 # flblog
 
-a simple blog, write in bash + vue, run at web server cgi + document root.
+A Simple Blog Based on Single HTML File Written in BASH.
+
+Features
+
+1. Run in the BASH script environment, no other runtime is required
+2. All data is in HTML, no database environment is required
+3. NGINX static cache, no additional resource consumption
+
+[简体中文](README.zh.md)
 
 ## INSTALL
 
