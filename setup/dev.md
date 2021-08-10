@@ -5,17 +5,17 @@
 - Link server root to git working diretory
   >```shell
   >$ # --archlinux/centos
-  >$ sudo rm -rf /srv/19blog
-  >$ sudo ln -s <git_working_diretory> /srv/19blog
+  >$ sudo rm -rf /srv/flblog
+  >$ sudo ln -s <git_working_diretory> /srv/flblog
   >$
   >$ # --macos
-  >$ sudo rm -rf ~/srv/19blog
-  >$ sudo ln -s <git_working_diretory> ~/srv/19blog
+  >$ sudo rm -rf ~/srv/flblog
+  >$ sudo ln -s <git_working_diretory> ~/srv/flblog
   >```
 <pre>
 NOTE: When you clone the respository, there has some test account
       in web basic authorization file(.passwd),
-      for admin:  19blog/cgi/admin/.passwd  -> name is admin, passwd is 123
+      for admin:  flblog/cgi/admin/.passwd  -> name is admin, passwd is 123
       you can login with admin, and then add you own manager account.
       you can also change password for admin use htpasswd command.
 </pre>

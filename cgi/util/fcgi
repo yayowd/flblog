@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# This file is part of the 19blog project.
-# 19blog is a simple blog site system.
-# Copyright (C) 2020  The 19blog Authors.
+# This file is part of the flblog project.
+# flblog is a simple blog site system.
+# Copyright (C) 2020  The flblog Authors.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,10 +52,10 @@
 # fastcgi_param PATH_INFO           $1;
 
 # --make sure only source once
-if [ $CGI_19BLOG_FCGI ]; then
+if [ $CGI_flblog_FCGI ]; then
     return
 fi
-CGI_19BLOG_FCGI=true
+CGI_flblog_FCGI=true
 
 # --includes
 . "$(dirname "${BASH_SOURCE[0]}")/http"

@@ -1,12 +1,12 @@
 {
-  "name": "19blog-home",
+  "name": "flblog-home",
   "version": "0.0.0",
   "author": "yayowd",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/yayowd/19blog/issues"
+    "url": "https://github.com/yayowd/flblog/issues"
   },
-  "homepage": "https://github.com/yayowd/19blog",
+  "homepage": "https://github.com/yayowd/flblog",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

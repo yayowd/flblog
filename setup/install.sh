@@ -12,13 +12,13 @@ linux*)
     arch)
         #        # TEST
         #        /bin/bash -c "$(cat ${SCRIPT_DIR}/arch.sh)"
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/19blog/main/setup/arch.sh)"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/flblog/main/setup/arch.sh)"
         ;;
     # CentOS Linux
     centos)
         #        # TEST
         #        /bin/bash -c "$(cat ${SCRIPT_DIR}/centos.sh)"
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/19blog/main/setup/centos.sh)"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/flblog/main/setup/centos.sh)"
         ;;
     *)
         echo "your os is not support yet."
@@ -28,7 +28,7 @@ linux*)
 darwin*)
     #    # TEST
     #    /bin/bash -c "$(cat ${SCRIPT_DIR}/macos.sh)"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/19blog/main/setup/macos.sh)"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/flblog/main/setup/macos.sh)"
     ;;
 *)
     echo "your os is not support yet."

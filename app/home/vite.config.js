@@ -21,7 +21,7 @@ export default defineConfig({
                 paths: {
                     vue: 'https://cdn.jsdelivr.net/npm/vue@3.0.5/dist/vue.esm-browser.prod.js',
                 },
-                assetFileNames: '19blog-home[extname]',
+                assetFileNames: 'flblog-home[extname]',
             },
         },
     },

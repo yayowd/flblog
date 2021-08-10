@@ -1,4 +1,4 @@
-### THE CHANGE LOG FOR 19BLOG
+### THE CHANGE LOG FOR flblog
 
 #### TODO
 * Message board on the homepage

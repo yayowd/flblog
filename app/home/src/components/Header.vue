@@ -9,8 +9,8 @@
 -->
 <template>
     <div class='logo'>
-        <Logo maker='19blog'
-              maker-url='https://github.com/yayowd/19blog'
+        <Logo maker='flblog'
+              maker-url='https://github.com/yayowd/flblog'
               :title='title'
               :memo='memo'
         />

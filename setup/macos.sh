@@ -4,10 +4,10 @@ msg() {
     printf "%s\n" "$@"
 }
 tip() {
-    msg "[19BLOG]==> $*"
+    msg "[flblog]==> $*"
 }
 subtip() {
-    msg "[19BLOG]=========> $*"
+    msg "[flblog]=========> $*"
 }
 abort() {
     subtip "[ERROR]$*"
@@ -21,7 +21,7 @@ onInt() {
 }
 trap onInt INT
 
-tip "Setup 19blog on macos..."
+tip "Setup flblog on macos..."
 
 tip "Checking for brew.."
 if ! brew; then
@@ -78,7 +78,7 @@ EOF
 brew services restart fcgiwrap
 
 tip "Make directories"
-server_root=~/srv/19blog
+server_root=~/srv/flblog
 if [ -e "$server_root" ]; then
     abort "Server root path ($server_root) exists"
 fi
@@ -102,7 +102,7 @@ subtip "test account: for manage -> name is yy,    passwd is 123"
 
 tip "Make demo files"
 read -d '' home <<-'EOF'
-<h2>Welcom to 19blog</h2>
+<h2>Welcom to flblog</h2>
 EOF
 read -d '' blogs <<-'EOF'
 <h2>Test's blog</h2>
@@ -147,13 +147,13 @@ if [ -z "$server_name" ]; then
     abort "Domain cannot be empty"
 fi
 read -d '' config <<-EOF
-# for 19blog
+# for flblog
 server {
    listen          80;
    listen          [::]:80;
    server_name     $server_name;
-   access_log      $log_path/19blog.access.log;
-   error_log       $log_path/19blog.error.log;
+   access_log      $log_path/flblog.access.log;
+   error_log       $log_path/flblog.error.log;
    location / {
        root        $home_root;
        try_files   \$uri \$uri/ @blogs;
@@ -180,7 +180,7 @@ server {
    location ~ /admin/ {
        root                    $cgi_root;
        # basic authorization
-       auth_basic              "19blog login";
+       auth_basic              "flblog login";
        auth_basic_user_file    $cgi_root/admin/.passwd;
        # buffer settings
        gzip                    off;
@@ -198,7 +198,7 @@ server {
    location ~ /manage/ {
        root                    $cgi_root;
        # basic authorization
-       auth_basic              "19blog login";
+       auth_basic              "flblog login";
        auth_basic_user_file    $cgi_root/manage/.passwd;
        # buffer settings
        gzip                    off;
@@ -213,13 +213,13 @@ server {
    }
 }
 EOF
-sudo tee /usr/local/etc/nginx/servers/19blog.conf <<<"$config" >/dev/null
+sudo tee /usr/local/etc/nginx/servers/flblog.conf <<<"$config" >/dev/null
 
 tip "Start nginx"
 brew services restart nginx
 
 tip "Testing"
-subtip "http://$server_name/             -> Welcom to 19blog"
+subtip "http://$server_name/             -> Welcom to flblog"
 subtip "http://$server_name/test         -> Test's blog"
 subtip "http://$server_name/api/test     -> API test success"
 subtip "http://$server_name/admin/test   -> Ask login: enter the administartor name and passwd set above"

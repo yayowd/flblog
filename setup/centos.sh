@@ -4,10 +4,10 @@ msg() {
     printf "%s\n" "$@"
 }
 tip() {
-    msg "[19BLOG]==> $*"
+    msg "[flblog]==> $*"
 }
 subtip() {
-    msg "[19BLOG]=========> $*"
+    msg "[flblog]=========> $*"
 }
 abort() {
     subtip "[ERROR]$*"
@@ -21,7 +21,7 @@ onInt() {
 }
 trap onInt INT
 
-tip "Setup 19blog on centos..."
+tip "Setup flblog on centos..."
 
 tip "Checking for bash version.."
 if [[ ${BASH_VERSION:0:1} -lt 4 ]]; then
@@ -35,7 +35,7 @@ tip "Configuration.."
 read -e -r -p "Enter server path [/srv]: " server_path
 server_path=${server_path%/}
 server_path=${server_path:-/srv}
-server_root=${server_path}/19blog
+server_root=${server_path}/flblog
 if [ -d "$server_root" ]; then
     abort "Server root path ($server_root) exists"
 fi
@@ -74,12 +74,12 @@ sudo yum install -y wget unzip
 subtip "Download project package"
 package_file=$(mktemp)
 package_version="0.1.0"
-package_url="https://github.com/yayowd/19blog/releases/download/v$package_version/19blog-$package_version.zip"
+package_url="https://github.com/yayowd/flblog/releases/download/v$package_version/flblog-$package_version.zip"
 if ! wget -q "$package_url" -O "$package_file"; then
     abort "Download package file failed"
 fi
 subtip "Unzip package file"
-package_dir="/tmp/19blog"
+package_dir="/tmp/flblog"
 mkdir "$package_dir"
 if ! unzip -q -o "$package_file" -d "$package_dir"; then
     abort "Unzip package file failed"
@@ -109,13 +109,13 @@ subtip "administrator account: for admin  -> name is admin, passwd is $admin_pas
 tip "Config nginx"
 log_path=/var/log/nginx
 read -d '' config <<-EOF
-# for 19blog
+# for flblog
 server {
    listen          80;
    listen          [::]:80;
    server_name     $server_name;
-   access_log      $log_path/19blog.access.log;
-   error_log       $log_path/19blog.error.log;
+   access_log      $log_path/flblog.access.log;
+   error_log       $log_path/flblog.error.log;
    location / {
        root        $blogs_root;
        try_files   \$uri \$uri.html \$uri/ @dist;
@@ -142,7 +142,7 @@ server {
    location ~ /admin/ {
        root                    $cgi_root;
        # basic authorization
-       auth_basic              "19blog admin login";
+       auth_basic              "flblog admin login";
        auth_basic_user_file    $config_root/.passwd_admin;
        # buffer settings
        gzip                    off;
@@ -160,7 +160,7 @@ server {
    location ~ /manage/ {
        root                    $cgi_root;
        # basic authorization
-       auth_basic              "19blog manage login";
+       auth_basic              "flblog manage login";
        auth_basic_user_file    $config_root/.passwd_manage;
        # buffer settings
        gzip                    off;
@@ -175,7 +175,7 @@ server {
    }
 }
 EOF
-sudo tee /etc/nginx/conf.d/19blog.conf <<<"$config" >/dev/null
+sudo tee /etc/nginx/conf.d/flblog.conf <<<"$config" >/dev/null
 
 tip "Start nginx"
 sudo systemctl enable nginx

@@ -4,10 +4,10 @@ msg() {
     printf "%s\n" "$@"
 }
 tip() {
-    msg "[19BLOG]==> $*"
+    msg "[flblog]==> $*"
 }
 subtip() {
-    msg "[19BLOG]=========> $*"
+    msg "[flblog]=========> $*"
 }
 abort() {
     subtip "[ERROR]$*"
@@ -21,7 +21,7 @@ onInt() {
 }
 trap onInt INT
 
-tip "Setup dev environment for 19blog..."
+tip "Setup dev environment for flblog..."
 
 initEnv() {
     # Adapt to different operating systems
@@ -32,25 +32,25 @@ initEnv() {
         # Arch Linux
         arch)
             if ! type nginx || ! type fcgiwrap; then
-                abort "Please install 19blog first."
+                abort "Please install flblog first."
             fi
             if ! type git; then
                 subtip "Install git"
                 sudo pacman --needed --noconfirm -S git
             fi
-            server_root=/srv/19blog
+            server_root=/srv/flblog
             web_user=http
             ;;
         # CentOS Linux
         centos)
             if ! type nginx || ! type fcgiwrap; then
-                abort "Please install 19blog first."
+                abort "Please install flblog first."
             fi
             if ! type git; then
                 subtip "Install git"
                 sudo yum install -y git
             fi
-            server_root=/srv/19blog
+            server_root=/srv/flblog
             web_user=nginx
             ;;
         *)
@@ -60,13 +60,13 @@ initEnv() {
         ;;
     darwin*)
         if ! type brew || ! type nginx || ! type fcgiwrap; then
-            abort "Please install 19blog first."
+            abort "Please install flblog first."
         fi
         if ! type git; then
             subtip "Install git"
             brew install git
         fi
-        server_root=~/srv/19blog
+        server_root=~/srv/flblog
         ;;
     *)
         abort "your os is not support yet."
@@ -78,9 +78,9 @@ tip "Init environment.."
 initEnv
 
 tip "Clone git respository"
-git_repository=https://github.com/yayowd/19blog.git
+git_repository=https://github.com/yayowd/flblog.git
 read -e -p "Please enter code work path:" work_path
-work_path="$work_path/19blog"
+work_path="$work_path/flblog"
 if [ -d "$work_path" ]; then
     abort "Code path ($work_path) exists"
 fi

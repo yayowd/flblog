@@ -137,32 +137,32 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ #       let's assume it is /srv(archlinux/centos) or ~/srv(macos)
 >$
 >$ # --archlinux
->$ sudo mkdir -p /srv/19blog/home
->$ sudo mkdir -p /srv/19blog/blogs
->$ sudo mkdir -p /srv/19blog/cgi/api
->$ sudo mkdir -p /srv/19blog/cgi/admin
->$ sudo mkdir -p /srv/19blog/cgi/manage
->$ sudo chown -R http:http /srv/19blog
+>$ sudo mkdir -p /srv/flblog/home
+>$ sudo mkdir -p /srv/flblog/blogs
+>$ sudo mkdir -p /srv/flblog/cgi/api
+>$ sudo mkdir -p /srv/flblog/cgi/admin
+>$ sudo mkdir -p /srv/flblog/cgi/manage
+>$ sudo chown -R http:http /srv/flblog
 >$
 >$ # --centos
->$ sudo mkdir -p /srv/19blog/home
->$ sudo mkdir -p /srv/19blog/blogs
->$ sudo mkdir -p /srv/19blog/cgi/api
->$ sudo mkdir -p /srv/19blog/cgi/admin
->$ sudo mkdir -p /srv/19blog/cgi/manage
->$ sudo chown -R nginx:nginx /srv/19blog
->$ sudo chcon -Ru system_u /srv/19blog
->$ sudo chcon -Rt httpd_sys_content_t /srv/19blog
+>$ sudo mkdir -p /srv/flblog/home
+>$ sudo mkdir -p /srv/flblog/blogs
+>$ sudo mkdir -p /srv/flblog/cgi/api
+>$ sudo mkdir -p /srv/flblog/cgi/admin
+>$ sudo mkdir -p /srv/flblog/cgi/manage
+>$ sudo chown -R nginx:nginx /srv/flblog
+>$ sudo chcon -Ru system_u /srv/flblog
+>$ sudo chcon -Rt httpd_sys_content_t /srv/flblog
 >$ # NOTE: In centos 8.2, chcon with error:
 >$ #       "chcon: can't apply partial context to unlabeled file 'xxx'"
 >$ #       please ignore it.
 >$
 >$ # --macos
->$ mkdir -p ~/srv/19blog/home
->$ mkdir -p ~/srv/19blog/blogs
->$ mkdir -p ~/srv/19blog/cgi/api
->$ mkdir -p ~/srv/19blog/cgi/admin
->$ mkdir -p ~/srv/19blog/cgi/manage
+>$ mkdir -p ~/srv/flblog/home
+>$ mkdir -p ~/srv/flblog/blogs
+>$ mkdir -p ~/srv/flblog/cgi/api
+>$ mkdir -p ~/srv/flblog/cgi/admin
+>$ mkdir -p ~/srv/flblog/cgi/manage
 >```
 - web basic authorization
 >```shell
@@ -170,33 +170,33 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ # install tools first
 >$ sudo pacman -S apache
 >$ # create account
->$ sudo -u http  touch /srv/19blog/cgi/admin/.passwd
->$ sudo -u http  touch /srv/19blog/cgi/manage/.passwd
->$ sudo -u http  htpasswd -b /srv/19blog/cgi/admin/.passwd <name> <passwd>
->$ sudo -u http  htpasswd -b /srv/19blog/cgi/manage/.passwd <name> <passwd>
+>$ sudo -u http  touch /srv/flblog/cgi/admin/.passwd
+>$ sudo -u http  touch /srv/flblog/cgi/manage/.passwd
+>$ sudo -u http  htpasswd -b /srv/flblog/cgi/admin/.passwd <name> <passwd>
+>$ sudo -u http  htpasswd -b /srv/flblog/cgi/manage/.passwd <name> <passwd>
 >$
 >$ # --centos
 >$ # install tools first
 >$ sudo yum install httpd-tools
 >$ # create account
->$ sudo -u nginx touch /srv/19blog/cgi/admin/.passwd
->$ sudo -u nginx touch /srv/19blog/cgi/manage/.passwd
->$ sudo -u nginx htpasswd -b /srv/19blog/cgi/admin/.passwd <name> <passwd>
->$ sudo -u nginx htpasswd -b /srv/19blog/cgi/manage/.passwd <name> <passwd>
+>$ sudo -u nginx touch /srv/flblog/cgi/admin/.passwd
+>$ sudo -u nginx touch /srv/flblog/cgi/manage/.passwd
+>$ sudo -u nginx htpasswd -b /srv/flblog/cgi/admin/.passwd <name> <passwd>
+>$ sudo -u nginx htpasswd -b /srv/flblog/cgi/manage/.passwd <name> <passwd>
 >$
 >$ # --macos
 >$ # create account
->$ touch ~/srv/19blog/cgi/admin/.passwd
->$ touch ~/srv/19blog/cgi/manage/.passwd
->$ htpasswd -b ~/srv/19blog/cgi/admin/.passwd <name> <passwd>
->$ htpasswd -b ~/srv/19blog/cgi/manage/.passwd <name> <passwd>
+>$ touch ~/srv/flblog/cgi/admin/.passwd
+>$ touch ~/srv/flblog/cgi/manage/.passwd
+>$ htpasswd -b ~/srv/flblog/cgi/admin/.passwd <name> <passwd>
+>$ htpasswd -b ~/srv/flblog/cgi/manage/.passwd <name> <passwd>
 >$
 >$ # NOTE: ONLY admin and manage cgi need authorized.
 >```
 - make demo files
 >```shell
 >$ read -d '' home <<-'EOF'
-><h2>Welcom to 19blog</h2>
+><h2>Welcom to flblog</h2>
 >EOF
 >$ read -d '' blogs <<-'EOF'
 ><h2>Test's blog</h2>
@@ -227,50 +227,50 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >EOF
 >$
 >$ # --archlinux
->$ sudo -u http tee /srv/19blog/home/index.html <<< "$home"
->$ sudo -u http tee /srv/19blog/blogs/test.html <<< "$blogs"
->$ sudo -u http tee /srv/19blog/cgi/api/test <<< "$api"
->$ sudo -u http tee /srv/19blog/cgi/admin/test <<< "$admin"
->$ sudo -u http tee /srv/19blog/cgi/manage/test <<< "$manage"
->$ sudo chmod +x /srv/19blog/cgi/api/test
->$ sudo chmod +x /srv/19blog/cgi/admin/test
->$ sudo chmod +x /srv/19blog/cgi/manage/test
+>$ sudo -u http tee /srv/flblog/home/index.html <<< "$home"
+>$ sudo -u http tee /srv/flblog/blogs/test.html <<< "$blogs"
+>$ sudo -u http tee /srv/flblog/cgi/api/test <<< "$api"
+>$ sudo -u http tee /srv/flblog/cgi/admin/test <<< "$admin"
+>$ sudo -u http tee /srv/flblog/cgi/manage/test <<< "$manage"
+>$ sudo chmod +x /srv/flblog/cgi/api/test
+>$ sudo chmod +x /srv/flblog/cgi/admin/test
+>$ sudo chmod +x /srv/flblog/cgi/manage/test
 >$
 >$ # --centos
->$ sudo -u nginx tee /srv/19blog/home/index.html <<< "$home"
->$ sudo -u nginx tee /srv/19blog/blogs/test.html <<< "$blogs"
->$ sudo -u nginx tee /srv/19blog/cgi/api/test <<< "$api"
->$ sudo -u nginx tee /srv/19blog/cgi/admin/test <<< "$admin"
->$ sudo -u nginx tee /srv/19blog/cgi/manage/test <<< "$manage"
->$ sudo chmod +x /srv/19blog/cgi/api/test
->$ sudo chmod +x /srv/19blog/cgi/admin/test
->$ sudo chmod +x /srv/19blog/cgi/manage/test
+>$ sudo -u nginx tee /srv/flblog/home/index.html <<< "$home"
+>$ sudo -u nginx tee /srv/flblog/blogs/test.html <<< "$blogs"
+>$ sudo -u nginx tee /srv/flblog/cgi/api/test <<< "$api"
+>$ sudo -u nginx tee /srv/flblog/cgi/admin/test <<< "$admin"
+>$ sudo -u nginx tee /srv/flblog/cgi/manage/test <<< "$manage"
+>$ sudo chmod +x /srv/flblog/cgi/api/test
+>$ sudo chmod +x /srv/flblog/cgi/admin/test
+>$ sudo chmod +x /srv/flblog/cgi/manage/test
 >$
 >$ # --macos
->$ tee ~/srv/19blog/home/index.html <<< "$home"
->$ tee ~/srv/19blog/blogs/test.html <<< "$blogs"
->$ tee ~/srv/19blog/cgi/api/test <<< "$api"
->$ tee ~/srv/19blog/cgi/admin/test <<< "$admin"
->$ tee ~/srv/19blog/cgi/manage/test <<< "$manage"
->$ chmod +x ~/srv/19blog/cgi/api/test
->$ chmod +x ~/srv/19blog/cgi/admin/test
->$ chmod +x ~/srv/19blog/cgi/manage/test
+>$ tee ~/srv/flblog/home/index.html <<< "$home"
+>$ tee ~/srv/flblog/blogs/test.html <<< "$blogs"
+>$ tee ~/srv/flblog/cgi/api/test <<< "$api"
+>$ tee ~/srv/flblog/cgi/admin/test <<< "$admin"
+>$ tee ~/srv/flblog/cgi/manage/test <<< "$manage"
+>$ chmod +x ~/srv/flblog/cgi/api/test
+>$ chmod +x ~/srv/flblog/cgi/admin/test
+>$ chmod +x ~/srv/flblog/cgi/manage/test
 >```
 - config nginx
 >```shell
 >$ # --archlinux
 >$ log_path=/var/log/nginx
->$ server_root=/srv/19blog
+>$ server_root=/srv/flblog
 >$ socket_path=/run/fcgiwrap.sock
 >$
 >$ # --centos
 >$ log_path=/var/log/nginx
->$ server_root=/srv/19blog
+>$ server_root=/srv/flblog
 >$ socket_path=/run/fcgiwrap/fcgiwrap-nginx.sock
 >$
 >$ # --macos
 >$ log_path=/usr/local/var/log/nginx
->$ server_root=$(cd ~; pwd)/srv/19blog
+>$ server_root=$(cd ~; pwd)/srv/flblog
 >$ socket_path=/usr/local/var/run/fastcgi.sock
 >$
 >$ home_root=$server_root/home
@@ -279,13 +279,13 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >$ server_name=domain.you
 >$
 >$ read -d '' config <<-EOF
-># for 19blog
+># for flblog
 >server {
 >    listen          80;
 >    listen          [::]:80;
 >    server_name     $server_name;
->    access_log      $log_path/19blog.access.log;
->    error_log       $log_path/19blog.error.log;
+>    access_log      $log_path/flblog.access.log;
+>    error_log       $log_path/flblog.error.log;
 >    location / {
 >        root        $home_root;
 >        try_files   \$uri \$uri/ @blogs;
@@ -311,7 +311,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >    location ~ /admin/ {
 >        root                    $cgi_root;
 >        # basic authorization
->        auth_basic              "19blog login";
+>        auth_basic              "flblog login";
 >        auth_basic_user_file    $cgi_root/admin/.passwd;
 >        # buffer settings
 >        gzip                    off;
@@ -328,7 +328,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >    location ~ /manage/ {
 >        root                    $cgi_root;
 >        # basic authorization
->        auth_basic              "19blog login";
+>        auth_basic              "flblog login";
 >        auth_basic_user_file    $cgi_root/manage/.passwd;
 >        # buffer settings
 >        gzip                    off;
@@ -345,16 +345,16 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >EOF
 >$
 >$ # --archlinux
->$ sudo tee /etc/nginx/19blog.conf <<< "$config"
+>$ sudo tee /etc/nginx/flblog.conf <<< "$config"
 >$ sudo vim /etc/nginx/nginx.conf
 >$ # add follow line in http module, before the exist server module
->    include 19blog.conf;
+>    include flblog.conf;
 >$
 >$ # --centos
->$ sudo tee /etc/nginx/conf.d/19blog.conf <<< "$config"
+>$ sudo tee /etc/nginx/conf.d/flblog.conf <<< "$config"
 >$
 >$ # --macos
->$ sudo tee /usr/local/etc/nginx/servers/19blog.conf <<< "$config"
+>$ sudo tee /usr/local/etc/nginx/servers/flblog.conf <<< "$config"
 >$
 >$ # NOTE: Before start nginx service, 
 >$ #       please set the port|domain|path|file to your own information.
@@ -369,7 +369,7 @@ NOTE: Nginx need fcgiwrap to support cgi.
 >```
 - check install
 >```shell
-> http://your.domain/               -> Welcom to 19blog
+> http://your.domain/               -> Welcom to flblog
 > http://your.domain/test           -> Test's blog
 > http://your.domain/api/test       -> API test success
 > http://your.domain/admin/test     -> Ask login: enter the administartor name and passwd set above
