@@ -111,7 +111,7 @@ margin-top: 59px;
 .blog {
 color: #222;
 text-decoration: none;
-margin: 9px 0;
+padding: 5px;
 display: flex;
 flex-direction: row;
 align-items: center;
@@ -123,7 +123,15 @@ border-bottom: rgb(197, 197, 149) dotted 1px;
 height: 1px;
 }
 .blog .date {
+font-size: smaller;
 font-family: monospace;
+}
+.blog:hover {
+color: rgb(52, 151, 37);
+background-color: #f9955119;
+}
+.blog:hover .separator {
+border-bottom: rgb(52, 151, 37) dashed 1px;
 }
 #right {
 flex: 0 1 400px;
