@@ -14,7 +14,9 @@ Features
 
 ### Script in bash
 
-<pre><code class="language-bash" data-lang="bash">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/flblog/main/setup/install.sh)"</code></pre>
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/flblog/main/setup/install.sh)"
+```
 
 ### Manual
 
@@ -24,7 +26,9 @@ more infomation in [handbook](setup/install.md)
 
 ### Script in bash
 
-<pre><code class="language-bash" data-lang="bash">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/flblog/main/setup/dev.sh)"</code></pre>
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/flblog/main/setup/dev.sh)"
+```
 
 ### Manual
 
