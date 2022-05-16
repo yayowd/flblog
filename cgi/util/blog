@@ -164,7 +164,7 @@ function draftPublish() {
 function addPublish2Home() {
     IFS= read -r -d '' publish <<EOF
 <a class='blog' href='/$user#$1'>
-<span>$2</span><span class='separator'></span><span class="date">$(date "+%Y-%m-%d")</span>
+<span>$2</span><span class='separator'></span><span class='date'>$(date "+%Y-%m-%d")</span>
 </a>
 EOF
     homeFile && file=$RET
