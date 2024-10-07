@@ -20,6 +20,12 @@ linux*)
         #        /bin/bash -c "$(cat ${SCRIPT_DIR}/centos.sh)"
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/flblog/main/setup/centos.sh)"
         ;;
+    # Debian Linux
+    debian)
+        #        # TEST
+        #        /bin/bash -c "$(cat ${SCRIPT_DIR}/debian.sh)"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/yayowd/flblog/main/setup/debian.sh)"
+        ;;
     *)
         echo "your os is not support yet."
         ;;
