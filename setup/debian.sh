@@ -73,7 +73,7 @@ sudo apt-get install -y wget unzip
 subtip "Download project package"
 package_file=$(mktemp)
 package_version="0.1.0"
-package_url="https://github.com/yayowd/flblog/releases/download/v$package_version/flblog-$package_version.zip"
+package_url="https://github.com/yayowd/flblog/releases/download/v$package_version/19blog-$package_version.zip"
 if ! wget -q "$package_url" -O "$package_file"; then
     abort "Download package file failed"
 fi
