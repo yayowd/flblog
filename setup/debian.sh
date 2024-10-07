@@ -92,7 +92,7 @@ blogs_root=$server_root/blogs
 dist_root=$server_root/dist
 cgi_root=$server_root/cgi
 sudo mkdir -p "$config_root"
-sudo chown -R nginx:nginx "$server_root"
+sudo chown -R www-data:www-data "$server_root"
 sudo chcon -Ru system_u "$server_root"
 sudo chcon -Rt httpd_sys_content_t "$server_root"
 
@@ -100,9 +100,9 @@ tip "Web basic authorization"
 subtip "Install web tools"
 sudo apt-get install -y httpd-tools
 subtip "Create account for administrator"
-sudo -u nginx touch "${config_root}/.passwd_admin"
-sudo -u nginx touch "${config_root}/.passwd_manage"
-sudo -u nginx htpasswd -b "${config_root}/.passwd_admin" admin "$admin_passwd"
+sudo -u www-data touch "${config_root}/.passwd_admin"
+sudo -u www-data touch "${config_root}/.passwd_manage"
+sudo -u www-data htpasswd -b "${config_root}/.passwd_admin" admin "$admin_passwd"
 subtip "administrator account: for admin  -> name is admin, passwd is $admin_passwd"
 
 tip "Config nginx"
