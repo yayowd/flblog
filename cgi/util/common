@@ -78,5 +78,5 @@ function curFile() {
     if [ ! -w "$1" ]; then
         resErr "Can not write to $user's file[$1]."
     fi
-    RET=$1
+    RET="$1"
 }

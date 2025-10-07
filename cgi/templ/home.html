@@ -1,150 +1,12 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html>
 <head>
 <meta charset='UTF-8'>
 <link rel='icon' href='/favicon.ico' />
 <meta name='viewport' content='width=device-width, initial-scale=1.0'>
 <title>flblog</title>
 <!--seo-->
-<link rel='stylesheet' href='flblog-home.css'>
-<style>
-* {
-padding: 0;
-}
-body {
-margin: 0;
-}
-html {
-height: 100%;
-}
-body {
-background: #f5fdf5;
-height: 100%;
-display: flex;
-flex-direction: column;
-}
-#content {
-flex: 1;
-display: flex;
-flex-direction: row;
-overflow: hidden;
-}
-#left {
-flex: 0 0 220px;
-text-align: center;
-display: flex;
-flex-direction: column;
-}
-.header {
-background-color: rgb(199, 235, 199);
-padding: 9px;
-}
-#toolbar {
-height: 44px;
-background-color: beige;
-display: flex;
-flex-direction: row;
-justify-content: center;
-align-items: center;
-padding: 0 9px;
-}
-#toolbar * {
-margin: 0 5px;
-}
-#users {
-text-align: justify;
-flex: 1;
-}
-#users>a {
-padding: 5px 9px;
-border-bottom: rgb(218, 218, 177) dotted 1px;
-text-decoration: none;
-font-size: small;
-}
-#users * {
-display: block;
-}
-#users .info {
-color: #aaa;
-}
-#copyright {
-line-height: 0.9;
-font-size: 11px;
-color: #999;
-}
-#copyright .reprint {
-color: #c11;
-}
-#middle {
-overflow: auto;
-font-size: 12pt;
-min-width: 418px;
-max-width: 880px;
-padding: 9px 19px;
-flex: 1;
-border-left: #595 dashed 1px;
-border-right: #595 dashed 1px;
-}
-#middle li p:nth-child(1) {
-font-size: larger;
-font-weight: bold;
-border-bottom: #333 dotted 1px;
-}
-#middle li p:nth-child(2) {
-color: #333;
-}
-#middle pre {
-white-space: pre-wrap; /* Since CSS 2.1 */
-white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
-white-space: -o-pre-wrap; /* Opera 7 */
-word-wrap: break-word; /* Internet Explorer 5.5+ */
-/* columns: 400px; */
-/* column-gap: 59px; */
-/* column-rule: #599361 dotted 1px; */
-/* padding-right: 39px; */
-line-height: 1.5;
-}
-#blogs .tip {
-font-weight: bold;
-margin-top: 59px;
-}
-.blog {
-color: #222;
-text-decoration: none;
-padding: 5px;
-display: flex;
-flex-direction: row;
-align-items: center;
-}
-.blog .separator {
-flex: 1;
-margin: 0 19px;
-border-bottom: rgb(197, 197, 149) dotted 1px;
-height: 1px;
-}
-.blog .date {
-font-size: smaller;
-font-family: monospace;
-}
-.blog:hover {
-color: rgb(52, 151, 37);
-background-color: #f9955119;
-}
-.blog:hover .separator {
-border-bottom: rgb(52, 151, 37) dashed 1px;
-}
-#right {
-flex: 0 1 400px;
-display: flex;
-flex-direction: column;
-}
-#replies {
-flex: 1;
-}
-#ads {
-background-color: #fff;
-}
-</style>
+<link rel='stylesheet' href='pub.css'>
 <script>
 // refresh needed page after data submitted
 function refresh() {
@@ -152,9 +14,7 @@ location.reload()
 }
 </script>
 </head>
-<body>
-<div id='app'></div>
-<script type='module' src='flblog-home.es.js'></script>
+<body id="home">
 <div id="content">
 <div id="left">
 <!--config-->
@@ -173,14 +33,14 @@ location.reload()
 </div>
 <div id="copyright">
 <p class="reprint">本站内容均为原创，禁止转载</p>
-<p>© 2022 ALPSIBEX.CN 版权所有</p>
+<p>© 2021-2025 ALPSIBEX.CN 版权所有</p>
 </div>
 </div>
 <div id="middle">
 <!--details-->
-<div id="blogs">
+<div id="list">
 <p class="tip">RECENT UPDATES</p>
-<!--blogs-->
+<!--list-->
 </div>
 </div>
 <div id="right">

@@ -38,6 +38,9 @@ CGI_flblog_HOME=true
 # --get home file
 #   result is home file path
 function homeFile() {
+	# help files
+    curFile "$blogsdir/pub.css" "$templdir/pub.css"
+	# main file, at last to return path
     curFile "$blogsdir/index.html" "$templdir/home.html"
 }
 
@@ -46,7 +49,7 @@ function homeFile() {
 function getConfig() {
     homeFile && file=$RET
     # get first line number for config
-    ln="$(sed -n "/^<div class='header'>/=" "$file")"
+    ln="$(sed -n "/^<div class='nameplate'>/=" "$file")"
     if [ -n "$ln" ]; then
         {
             IFS= read -r title
@@ -69,7 +72,7 @@ function saveConfig() {
     htmlEncode "$1" && title=$RET
     htmlEncode "$2" && memo=$RET
     IFS= read -r -d '' config <<EOF
-<div class='header'>
+<div class='nameplate'>
 <h3>$title</h3>
 <pre>
 $memo</pre>
@@ -77,11 +80,11 @@ $memo</pre>
 EOF
     homeFile && file=$RET
     # get first line number for config
-    ln="$(sed -n "/^<div class='header'>/=" "$file")"
+    ln="$(sed -n "/^<div class='nameplate'>/=" "$file")"
     if [ -z "$ln" ]; then
         save "$file" "<!--config-->" "" "$config"
     else
-        remove "$file" "<div class='header'>" "<\/div>" && ln=$((RET - 1))
+        remove "$file" "<div class='nameplate'>" "<\/div>" && ln=$((RET - 1))
         save "$file" "" "$ln" "$config"
     fi
 }
@@ -197,8 +200,8 @@ function saveUser() {
 function addUser2Home () {
     IFS= read -r -d '' user <<EOF
 <a class='user' href='/$1'>
-<span class='title'></span>
-<span class='info'>$1 $(date "+%H:%M:%S %m/%d/%Y")</span>
+<span class='title'>$2</span>
+<span class='info'><span class='account'>$1</span><span class='date'>$(date "+%H:%M:%S %m/%d/%Y")</span></span>
 </a>
 EOF
     homeFile && file=$RET
