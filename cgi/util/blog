@@ -168,7 +168,7 @@ function addPublish2Home() {
 </a>
 EOF
     homeFile && file=$RET
-    sed -i "/^<!--blogs-->$/r"<(echo -n "$publish") "$file"
+    sed -i "/^<!--list-->$/r"<(echo -n "$publish") "$file"
 }
 
 # --get blog list
